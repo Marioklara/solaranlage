@@ -1,89 +1,193 @@
-function euro(value) {
-  return Math.round(value).toLocaleString("de-DE") + " EUR";
+/* PV-Angebot24: unverbindliche Orientierungsrechnung, kein Fachgutachten. */
+"use strict";
+
+const PV_ASSUMPTIONS = Object.freeze({
+  yearlyKwhPerKwp: 950,
+  usableRoofFraction: 0.72,
+  roofSqmPerKwp: 6,
+  feedInTariff: 0.077, // Beispielwert 2026, bei Inbetriebnahme prüfen.
+  orientation: { south: 1, eastwest: 0.85, north: 0.65 },
+  shade: { low: 1, medium: 0.85, high: 0.65 }
+});
+
+function readNumber(value) {
+  if (typeof value === "string" && value.trim() === "") return NaN;
+  return Number(String(value).replace(",", "."));
+}
+
+function money(value) {
+  return new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(value);
+}
+
+function formatNumber(value, digits = 0) {
+  return new Intl.NumberFormat("de-DE", { maximumFractionDigits: digits, minimumFractionDigits: digits }).format(value);
+}
+
+function calculatePvEstimate(input) {
+  const roof = readNumber(input.roof);
+  const usage = readNumber(input.usage);
+  const people = readNumber(input.people);
+  const price = readNumber(input.price);
+  const tariff = input.tariff === undefined ? PV_ASSUMPTIONS.feedInTariff : readNumber(input.tariff);
+  const storage = input.storage === true || input.storage === "yes";
+  const houseType = input.houseType || "single";
+  const orientation = input.orientation || "south";
+  const shading = input.shading || "low";
+  const zip = String(input.zip || "").trim();
+
+  const validRange = (v, min, max) => Number.isFinite(v) && v >= min && v <= max;
+  if (!validRange(roof, 20, 1000)) return { error: "Bitte eine Dachfläche zwischen 20 und 1.000 m² eingeben." };
+  if (!validRange(usage, 1000, 100000)) return { error: "Bitte einen Jahresverbrauch zwischen 1.000 und 100.000 kWh eingeben." };
+  if (!validRange(people, 1, 12) || !Number.isInteger(people)) return { error: "Bitte eine Personenzahl zwischen 1 und 12 eingeben." };
+  if (!validRange(price, 0.1, 2)) return { error: "Bitte einen Strompreis von 0,10 bis 2,00 EUR/kWh eingeben." };
+  if (!validRange(tariff, 0, 0.3)) return { error: "Bitte eine Einspeisevergütung zwischen 0 und 0,30 EUR/kWh eingeben." };
+  if (zip && !/^\d{5}$/.test(zip)) return { error: "Die Postleitzahl muss aus genau fünf Ziffern bestehen." };
+  if (!Object.hasOwn(PV_ASSUMPTIONS.orientation, orientation) || !Object.hasOwn(PV_ASSUMPTIONS.shade, shading)) {
+    return { error: "Bitte gültige Angaben zu Dachausrichtung und Verschattung wählen." };
+  }
+  if (!["single", "multi", "row"].includes(houseType)) return { error: "Bitte eine gültige Hausart wählen." };
+
+  const roofMaxKwp = roof / PV_ASSUMPTIONS.roofSqmPerKwp * PV_ASSUMPTIONS.usableRoofFraction;
+  // Verbrauchsorientierte Startgröße; Dachbelegung und Wirtschaftlichkeit vor Ort prüfen.
+  const pvKwp = Math.min(roofMaxKwp, Math.max(3, usage / 800));
+  const annualGeneration = pvKwp * PV_ASSUMPTIONS.yearlyKwhPerKwp *
+    PV_ASSUMPTIONS.orientation[orientation] * PV_ASSUMPTIONS.shade[shading];
+  const batteryKwh = storage ? Math.min(12, Math.max(3, Math.round(Math.min(usage / 1000 * 1.2, pvKwp * 1.1)))) : 0;
+
+  // Modellannahmen: maximal ca. 35 % Autarkie ohne bzw. 70 % mit Speicher.
+  // Diese Deckungsgrenzen verhindern 100 % Autarkie aus Jahresmittelwerten.
+  const directOrStored = Math.min(usage * (storage ? 0.70 : 0.35), annualGeneration * (storage ? 0.60 : 0.38));
+  const storageLoss = storage ? Math.min(annualGeneration * 0.04, annualGeneration - directOrStored) : 0;
+  const feedInKwh = Math.max(0, annualGeneration - directOrStored - storageLoss);
+
+  const pvCost = pvKwp * (houseType === "multi" ? 1450 : 1550) + 1800;
+  const batteryCost = storage ? batteryKwh * 850 + 600 : 0;
+  const investment = pvCost + batteryCost;
+  const savedGridCost = directOrStored * price;
+  const feedInRevenue = feedInKwh * tariff;
+  const operatingCost = Math.max(150, investment * 0.01);
+  const yearlyNetBenefit = savedGridCost + feedInRevenue - operatingCost;
+  const paybackYears = yearlyNetBenefit > 0 ? investment / yearlyNetBenefit : null;
+
+  return {
+    pvKwp, roofMaxKwp, annualGeneration, batteryKwh, investment, savedGridCost, feedInRevenue,
+    operatingCost, yearlyNetBenefit, paybackYears, directOrStored, feedInKwh, storageLoss,
+    autonomyPercent: directOrStored / usage * 100,
+    storage, tariff, input: { roof, usage, people, price, houseType, orientation, shading, zip }
+  };
+}
+
+function calculateStorageOptions(pvSizeValue, annualUsageValue) {
+  const pvSize = readNumber(pvSizeValue);
+  const annualUsage = readNumber(annualUsageValue);
+  if (!Number.isFinite(pvSize) || pvSize < 3 || pvSize > 30) {
+    return { error: "Bitte eine PV-Leistung zwischen 3 und 30 kWp eingeben." };
+  }
+  if (!Number.isFinite(annualUsage) || annualUsage < 1000 || annualUsage > 100000) {
+    return { error: "Bitte einen Jahresverbrauch zwischen 1.000 und 100.000 kWh eingeben." };
+  }
+  const base = Math.min(12, Math.max(3, Math.round(Math.min(annualUsage / 1000 * 1.2, pvSize * 1.1))));
+  const capacities = Array.from(new Set([Math.max(2, base - 2), base, Math.min(15, base + 2)]));
+  return { options: capacities.map((capacity, index) => ({
+    title: ["Kompakt", "Orientierung", "Groß"][index],
+    capacity, estimatedCost: capacity * 850 + 600,
+    note: index === 0 ? "kleinere Investition" : index === 1 ? "verbrauchsorientierte Startgröße" : "Mehr Kapazität, Wirtschaftlichkeit prüfen"
+  })) };
+}
+
+function renderResult(result) {
+  const target = document.getElementById("pvResult");
+  if (!target) return;
+  if (result.error) {
+    target.textContent = result.error;
+    target.setAttribute("role", "alert");
+    return;
+  }
+  target.removeAttribute("role");
+  // Ausschließlich berechnete Zahlen und feste HTML-Texte, keine unbereinigten Benutzereingaben.
+  target.innerHTML = `
+    <h3>Geschätztes Ergebnis</h3>
+    <p>Unverbindliche Modellrechnung – kein Angebot und keine Ertragsgarantie.</p>
+    <div class="result-grid">
+      <div class="metric"><span>Orientierende PV-Größe</span><strong>${formatNumber(result.pvKwp, 1)} kWp</strong></div>
+      <div class="metric"><span>Investition geschätzt</span><strong>${money(result.investment)}</strong></div>
+      <div class="metric"><span>Finanzieller Vorteil/Jahr*</span><strong>${money(result.yearlyNetBenefit)}</strong></div>
+      <div class="metric"><span>Einfache Amortisation*</span><strong>${result.paybackYears ? formatNumber(result.paybackYears, 1) + " Jahre" : "nicht berechenbar"}</strong></div>
+    </div>
+    <div class="result-details">
+      <p>Geschätzte Jahresproduktion: <strong>${formatNumber(result.annualGeneration)} kWh</strong> · Anteil Eigenversorgung: <strong>${formatNumber(result.autonomyPercent)} %</strong></p>
+      <p>Gesparte Stromkosten: ${money(result.savedGridCost)} · angenommene Einspeiseerlöse: ${money(result.feedInRevenue)} · geschätzte laufende Kosten: ${money(result.operatingCost)}/Jahr</p>
+      <p>Speicher: ${result.storage ? formatNumber(result.batteryKwh) + " kWh (grobe Startgröße)" : "kein Speicher"} · Rechenwert Einspeisung: ${formatNumber(result.tariff * 100, 2)} ct/kWh</p>
+      <p class="result-disclaimer">* Ohne Finanzierung, Steuern, Förderung, Preisänderungen und größere Reparaturen. Dachstatik, Lastprofil, reale Erträge und tatsächliche Einspeisevergütung müssen geprüft werden. Die PLZ verändert die Ertragsschätzung nicht.</p>
+    </div>`;
 }
 
 function calculatePv() {
-  const roof = Number(document.getElementById("roofSize")?.value || 0);
-  const usage = Number(document.getElementById("usage")?.value || 0);
-  const people = Number(document.getElementById("people")?.value || 1);
-  const price = Number(document.getElementById("powerPrice")?.value || 0.35);
-  const storage = document.getElementById("storageWanted")?.value === "yes";
-  const houseType = document.getElementById("houseType")?.value || "single";
-  const result = document.getElementById("pvResult");
-
-  if (!result) return;
-
-  // Reject missing or implausible inputs rather than silently changing them.
-  if (![roof, usage, people, price].every(Number.isFinite) ||
-      roof < 20 || roof > 1000 || usage < 1000 || usage > 100000 ||
-      people < 1 || people > 12 || price < 0.1 || price > 2) {
-    result.textContent = "Bitte prüfe deine Angaben: Dachfläche 20–1000 m², Verbrauch 1000–100000 kWh, Personen 1–12 und Strompreis 0,10–2,00 EUR/kWh.";
-    return;
+  const get = (id) => document.getElementById(id)?.value;
+  const result = calculatePvEstimate({
+    roof: get("roofSize"), usage: get("usage"), people: get("people"),
+    price: get("powerPrice"), tariff: get("feedInTariff"),
+    storage: get("storageWanted"), houseType: get("houseType"),
+    orientation: get("roofOrientation"), shading: get("shadeLevel"), zip: get("zip")
+  });
+  renderResult(result);
+  if (!result.error) {
+    const summary = document.getElementById("pvLeadSummary");
+    const formZip = document.getElementById("formZip");
+    const project = document.getElementById("project");
+    if (summary) summary.value = `Dach ${result.input.roof} m²; Bedarf ${result.input.usage} kWh/Jahr; PV etwa ${formatNumber(result.pvKwp,1)} kWp; Speicher ${result.batteryKwh} kWh; Investition ca. ${money(result.investment)}; Jahresvorteil ca. ${money(result.yearlyNetBenefit)} (unverbindliche Modellrechnung)`;
+    if (formZip && !formZip.value && result.input.zip) formZip.value = result.input.zip;
+    if (project) project.value = result.storage ? "Solaranlage mit Speicher" : "Solaranlage ohne Speicher";
+    const note = document.getElementById("calculatorTransferNotice");
+    if (note) note.hidden = false;
   }
-
-  // Conservative roof utilisation. Never exceed the roof-limited capacity.
-  const kwpByRoof = roof / 6 * 0.72;
-  const demandKwp = usage / 850;
-  const kwp = Math.min(kwpByRoof, Math.max(4, Math.min(demandKwp, 14)));
-  const yearlyProduction = kwp * 950;
-  const baseCostPerKwp = houseType === "multi" ? 1450 : 1550;
-  const storageKwh = storage ? Math.min(Math.max(Math.round(kwp * 0.9), 5), 14) : 0;
-  const storageCost = storageKwh * 850;
-  const totalCost = kwp * baseCostPerKwp + storageCost + 1800;
-  const selfUseRate = storage ? 0.58 : 0.32;
-  const selfUsed = Math.min(yearlyProduction * selfUseRate, usage);
-  const feedIn = Math.max(yearlyProduction - selfUsed, 0);
-  const yearlySaving = selfUsed * price + feedIn * 0.08;
-  const payback = totalCost / Math.max(yearlySaving, 1);
-  const householdHint = people >= 4 ? "Der Verbrauch wirkt familiennah; Speicher und Lastverschiebung können wichtiger werden." : "Bei diesem Verbrauch ist die richtige Anlagengröße wichtiger als maximale Dachbelegung.";
-
-  result.innerHTML = `
-    <h3>Geschätztes Ergebnis</h3>
-    <p>Diese Werte sind eine Orientierung und ersetzen kein verbindliches Angebot.</p>
-    <div class="result-grid">
-      <div class="metric"><span>PV-Größe</span><strong>${kwp.toFixed(1).replace(".", ",")} kWp</strong></div>
-      <div class="metric"><span>Kosten grob</span><strong>${euro(totalCost)}</strong></div>
-      <div class="metric"><span>Ersparnis/Jahr</span><strong>${euro(yearlySaving)}</strong></div>
-      <div class="metric"><span>Amortisation</span><strong>${payback.toFixed(1).replace(".", ",")} Jahre</strong></div>
-    </div>
-    <p style="margin-top:14px">Speicher-Empfehlung: ${storage ? storageKwh + " kWh als grobe Startgröße." : "Kein Speicher ausgewählt; dadurch sind die Investitionskosten niedriger."} ${householdHint}</p>
-  `;
+  return result;
 }
 
 function updateStorageComparison() {
-  const pvSize = Number(document.getElementById("storagePvSize")?.value ?? 8);
   const output = document.getElementById("storageResult");
   if (!output) return;
-  if (!Number.isFinite(pvSize) || pvSize < 3 || pvSize > 30) {
-    output.innerHTML = '<tr><td colspan="4">Bitte eine PV-Größe zwischen 3 und 30 kWp eingeben.</td></tr>';
+  const answer = calculateStorageOptions(document.getElementById("storagePvSize")?.value, document.getElementById("storageUsage")?.value);
+  if (answer.error) {
+    output.innerHTML = `<tr><td colspan="4">${answer.error}</td></tr>`;
     return;
   }
-
-  const small = Math.max(5, Math.round(pvSize * 0.65));
-  const balanced = Math.max(6, Math.round(pvSize * 0.9));
-  const large = Math.max(8, Math.round(pvSize * 1.15));
-  const rows = [
-    ["Kompakt", small, small * 850 + 1200, "niedriger Einstiegspreis"],
-    ["Ausgewogen", balanced, balanced * 850 + 1500, "häufig passend für Einfamilienhäuser"],
-    ["Groß", large, large * 850 + 1900, "mehr Autarkie, höhere Investition"]
-  ];
-
-  output.innerHTML = rows.map(row => `
-    <tr>
-      <td>${row[0]}</td>
-      <td>${row[1]} kWh</td>
-      <td>${euro(row[2])}</td>
-      <td>${row[3]}</td>
-    </tr>
-  `).join("");
+  output.innerHTML = answer.options.map(option => `<tr><td>${option.title}</td><td>${option.capacity} kWh</td><td>${money(option.estimatedCost)}</td><td>${option.note}</td></tr>`).join("");
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("pvCalculator")?.addEventListener("submit", event => {
-    event.preventDefault();
-    calculatePv();
+function initializeSite() {
+  document.querySelectorAll(".nav-toggle").forEach(button => {
+    const menu = button.parentElement.querySelector(".nav-links");
+    if (!menu) return;
+    button.addEventListener("click", () => {
+      const expanded = button.getAttribute("aria-expanded") === "true";
+      button.setAttribute("aria-expanded", String(!expanded));
+      menu.classList.toggle("is-open", !expanded);
+    });
+    menu.querySelectorAll("a").forEach(link => link.addEventListener("click", () => {
+      button.setAttribute("aria-expanded", "false");
+      menu.classList.remove("is-open");
+    }));
   });
+
+  const calcForm = document.getElementById("pvCalculator");
+  if (calcForm) {
+    calcForm.addEventListener("submit", event => {
+      event.preventDefault();
+      calculatePv();
+    });
+    calculatePv();
+  }
   document.getElementById("storagePvSize")?.addEventListener("input", updateStorageComparison);
-  calculatePv();
+  document.getElementById("storageUsage")?.addEventListener("input", updateStorageComparison);
   updateStorageComparison();
-});
+}
+
+if (typeof document !== "undefined") {
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initializeSite);
+  else initializeSite();
+}
+
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = { calculatePvEstimate, calculateStorageOptions, readNumber, PV_ASSUMPTIONS };
+}
