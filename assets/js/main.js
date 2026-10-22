@@ -13,10 +13,18 @@ function calculatePv() {
 
   if (!result) return;
 
-  const usableRoof = Math.max(roof, 20);
-  const kwpByRoof = usableRoof / 6;
-  const demandKwp = Math.max(4, usage / 850);
-  const kwp = Math.min(Math.max(kwpByRoof * 0.72, 4), Math.max(demandKwp, 14));
+  // Reject missing or implausible inputs rather than silently changing them.
+  if (![roof, usage, people, price].every(Number.isFinite) ||
+      roof < 20 || roof > 1000 || usage < 1000 || usage > 100000 ||
+      people < 1 || people > 12 || price < 0.1 || price > 2) {
+    result.textContent = "Bitte prüfe deine Angaben: Dachfläche 20–1000 m², Verbrauch 1000–100000 kWh, Personen 1–12 und Strompreis 0,10–2,00 EUR/kWh.";
+    return;
+  }
+
+  // Conservative roof utilisation. Never exceed the roof-limited capacity.
+  const kwpByRoof = roof / 6 * 0.72;
+  const demandKwp = usage / 850;
+  const kwp = Math.min(kwpByRoof, Math.max(4, Math.min(demandKwp, 14)));
   const yearlyProduction = kwp * 950;
   const baseCostPerKwp = houseType === "multi" ? 1450 : 1550;
   const storageKwh = storage ? Math.min(Math.max(Math.round(kwp * 0.9), 5), 14) : 0;
@@ -43,9 +51,13 @@ function calculatePv() {
 }
 
 function updateStorageComparison() {
-  const pvSize = Number(document.getElementById("storagePvSize")?.value || 8);
+  const pvSize = Number(document.getElementById("storagePvSize")?.value ?? 8);
   const output = document.getElementById("storageResult");
   if (!output) return;
+  if (!Number.isFinite(pvSize) || pvSize < 3 || pvSize > 30) {
+    output.innerHTML = '<tr><td colspan="4">Bitte eine PV-Größe zwischen 3 und 30 kWp eingeben.</td></tr>';
+    return;
+  }
 
   const small = Math.max(5, Math.round(pvSize * 0.65));
   const balanced = Math.max(6, Math.round(pvSize * 0.9));
