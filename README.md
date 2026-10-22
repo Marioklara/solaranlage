@@ -31,9 +31,9 @@ node --check assets/js/main.js
 node --test tests/site.test.cjs
 ```
 
-GitHub Actions führt diese Prüfungen bei Pushes und Pull Requests aus (Workflow `.github/workflows/site-check.yml`).
+GitHub Actions führt diese Prüfungen bei Pushes und Pull Requests aus (Workflow `.github/workflows/site-check.yml`). Zusätzlich installiert die CI Chromium/Playwright und prüft die Menüs, Formulare und Berechnungen im Browser auf Smartphone- und Desktop-Größe.
 
-Diese Prüfungen testen die PV-Rechenlogik, Eingabegrenzen, internen Datei-/Seitenlinks und die Formularstruktur. Sie sind **kein** Realbetrieb-Test eines FormSubmit-Versands und **kein** vollständiger Browser-/Gerätetest.
+Diese Prüfungen testen die PV-Rechenlogik, Eingabegrenzen, internen Datei-/Seitenlinks und die Formularstruktur. Zusätzlich läuft ein Browser-Smoke-Test. Es bleibt **kein** Realbetrieb-Test eines FormSubmit-Versands, kein umfassender Test auf allen Geräten und keine Bestätigung der rechtlichen Zulässigkeit.
 
 ## Vor dem Produktivbetrieb offen
 
