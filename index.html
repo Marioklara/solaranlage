@@ -18,7 +18,7 @@
   <header class="site-header">
     <nav class="nav" aria-label="Hauptnavigation">
       <a class="logo" href="index.html">PV-Angebot<span>24</span></a>
-      <div class="nav-links">
+      <button class="nav-toggle" type="button" aria-controls="nav-main" aria-expanded="false" aria-label="Navigation öffnen">☰ Menü</button><div class="nav-links" id="nav-main">
         <a href="pv-rechner/">PV-Rechner</a>
         <a href="solaranlage-kosten/">Kosten</a>
         <a href="photovoltaik-vergleich/">Vergleich</a>
@@ -48,17 +48,20 @@
     <section class="container" id="rechner">
       <div class="section-head center">
         <h2>Solar-Rechner für deine erste Einschätzung</h2>
-        <p class="muted">Der Rechner nutzt einfache Durchschnittswerte. Dachausrichtung, Verschattung, Netzanschluss und konkrete Komponenten müssen später im Angebot geprüft werden.</p>
+        <p class="muted">Der Rechner berücksichtigt grob Dachausrichtung und Verschattung. Er nutzt weiterhin Modellannahmen; Dachstatik, Lastprofil und Netzanschluss müssen Fachbetriebe prüfen.</p>
       </div>
       <div class="card">
         <form id="pvCalculator">
           <div class="form-grid">
-            <div><label for="zip">PLZ</label><input id="zip" name="plz" inputmode="numeric" maxlength="5" placeholder="z. B. 68723"></div>
+            <div><label for="zip">PLZ</label><input id="zip" name="plz" inputmode="numeric" maxlength="5" pattern="[0-9]{5}" placeholder="z. B. 68723"></div>
             <div><label for="houseType">Hausart</label><select id="houseType"><option value="single">Einfamilienhaus</option><option value="multi">Mehrfamilienhaus</option><option value="row">Reihenhaus</option></select></div>
-            <div><label for="roofSize">Dachgröße in m²</label><input id="roofSize" type="number" min="20" value="70"></div>
-            <div><label for="usage">Stromverbrauch/Jahr in kWh</label><input id="usage" type="number" min="1000" value="4200"></div>
-            <div><label for="people">Anzahl Personen</label><input id="people" type="number" min="1" max="12" value="4"></div>
-            <div><label for="powerPrice">Strompreis EUR/kWh</label><input id="powerPrice" type="number" min="0.1" step="0.01" value="0.35"></div>
+            <div><label for="roofOrientation">Dachausrichtung</label><select id="roofOrientation"><option value="south">Süd / überwiegend Süd</option><option value="eastwest">Ost / West</option><option value="north">Überwiegend Nord</option></select></div>
+            <div><label for="shadeLevel">Verschattung</label><select id="shadeLevel"><option value="low">Gering</option><option value="medium">Mittel</option><option value="high">Stark</option></select></div>
+            <div><label for="roofSize">Dachgröße in m²</label><input id="roofSize" type="number" min="20" max="1000" required value="70"></div>
+            <div><label for="usage">Stromverbrauch/Jahr in kWh</label><input id="usage" type="number" min="1000" max="100000" required value="4200"></div>
+            <div><label for="people">Anzahl Personen</label><input id="people" type="number" min="1" max="12" step="1" required value="4"></div>
+            <div><label for="powerPrice">Strompreis EUR/kWh</label><input id="powerPrice" type="number" min="0.1" max="2" required step="0.01" value="0.35"></div>
+            <div><label for="feedInTariff">Angenommene Einspeisevergütung (EUR/kWh)</label><input id="feedInTariff" type="number" min="0" max="0.3" step="0.001" value="0.077"><small class="field-note">Beispielwert, tatsächlichen Satz prüfen.</small></div>
             <div><label for="storageWanted">Speicher gewünscht?</label><select id="storageWanted"><option value="yes">Ja</option><option value="no">Nein</option></select></div>
           </div>
           <button class="button" type="submit">Kosten und Ersparnis berechnen</button>
@@ -76,7 +79,7 @@
         <div class="grid-3">
           <article class="card"><div class="step-number">1</div><h3>Daten eingeben</h3><p>PLZ, Hausart, Dachgröße und Verbrauch helfen bei der ersten Einschätzung.</p></article>
           <article class="card"><div class="step-number">2</div><h3>Orientierung erhalten</h3><p>Du siehst grobe Kosten, mögliche Ersparnis und eine passende Speichergröße.</p></article>
-          <article class="card"><div class="step-number">3</div><h3>Anfrage stellen</h3><p>Wenn du möchtest, sendest du deine Daten für eine unverbindliche Angebotsanfrage.</p></article>
+          <article class="card"><div class="step-number">3</div><h3>Anfrage stellen</h3><p>Du kannst freiwillig eine Anfrage stellen. Eine automatische Angebotsvermittlung ist derzeit noch nicht eingerichtet.</p></article>
         </div>
       </div>
     </section>
@@ -114,24 +117,28 @@
     <section class="container" id="anfrage">
       <div class="section-head center">
         <h2>Kostenlose Solar-Anfrage</h2>
-        <p class="muted">Das Formular nutzt FormSubmit. Es werden keine Analytics- oder Affiliate-Tracker geladen.</p>
+        <p class="muted">Das Formular wird über den externen Dienst FormSubmit versendet. Bitte Datenschutzhinweise beachten. Es werden keine Analytics- oder Affiliate-Tracker geladen.</p>
       </div>
       <div class="card">
-        <form action="https://formsubmit.co/alsalehmohammad126@gmail.com" method="POST">
+        <form action="https://formsubmit.co/alsalehmohammad126@gmail.com" method="POST" id="solarLeadForm">
+          <input type="hidden" id="pvLeadSummary" name="pv_berechnung" value="">
+          <input type="text" name="_honey" tabindex="-1" autocomplete="off" class="honeypot" aria-hidden="true">
+          <p id="calculatorTransferNotice" class="field-note" hidden>Deine Angaben aus dem PV-Rechner werden der Anfrage beigefügt. Prüfe sie vor dem Absenden.</p>
           <div class="form-grid">
             <div><label for="name">Name</label><input id="name" name="name" required autocomplete="name"></div>
             <div><label for="email">E-Mail</label><input id="email" name="email" type="email" required autocomplete="email"></div>
             <div><label for="phone">Telefon optional</label><input id="phone" name="telefon" autocomplete="tel"></div>
-            <div><label for="formZip">PLZ</label><input id="formZip" name="plz" required inputmode="numeric" maxlength="5"></div>
+            <div><label for="formZip">PLZ</label><input id="formZip" name="plz" required inputmode="numeric" maxlength="5" pattern="[0-9]{5}"></div>
             <div><label for="project">Projektart</label><select id="project" name="projektart"><option>Solaranlage mit Speicher</option><option>Solaranlage ohne Speicher</option><option>Stromspeicher nachrüsten</option><option>Wärmepumpe mit PV planen</option></select></div>
             <div><label for="timeline">Zeitraum</label><select id="timeline" name="zeitraum"><option>so bald wie möglich</option><option>in 3 bis 6 Monaten</option><option>erst informieren</option></select></div>
           </div>
           <br>
           <label for="message">Nachricht</label>
           <textarea id="message" name="nachricht" placeholder="Kurze Beschreibung von Dach, Verbrauch oder Wunschlösung"></textarea>
+          <label class="checkbox"><input type="checkbox" required name="partner_einwilligung" value="Ja"> Ich willige ein, dass meine Anfrage zur Angebotserstellung an bis zu drei geeignete Solarfirmen weitergegeben werden darf. Die Weitergabe erfolgt erst nach Auswahl konkreter Partner; ich kann die Einwilligung für die Zukunft widerrufen.</label>
           <label class="checkbox"><input type="checkbox" required name="datenschutz_zustimmung"> Ich stimme zu, dass meine Angaben zur Bearbeitung der Anfrage per E-Mail übermittelt werden. Details stehen in der Datenschutzerklärung.</label>
           <input type="hidden" name="_subject" value="Neue Solar-Anfrage über PV-Angebot24">
-          <input type="hidden" name="_captcha" value="false">
+          <input type="hidden" name="_captcha" value="true">
           <button class="button" type="submit">Anfrage senden</button>
         </form>
       </div>
@@ -141,7 +148,7 @@
       <div class="grid-2">
         <article>
           <h2>Wie PV-Angebot24 Geld verdienen kann</h2>
-          <p>Diese Website kann später Werbung, Partnerlinks oder vermittelte Anfragen nutzen. Solche Links werden klar als Werbung oder Affiliate-Link gekennzeichnet. Aktuell sind keine echten Tracking-Links eingebaut.</p>
+          <p>Diese Website kann später Werbung, Partnerlinks oder vermittelte Anfragen nutzen. Solche Links werden klar als Werbung oder Affiliate-Link gekennzeichnet. Aktuell sind keine echten Tracking-Links und keine automatischen Vermittlungsprozesse eingebaut.</p>
         </article>
         <article>
           <h2>Datenschutz und Cookies</h2>
@@ -165,7 +172,7 @@
   </section>
   <section class="container" id="datenschutz">
     <h2>Datenschutzerklärung</h2>
-    <p>Diese Website kann ohne Benutzerkonto genutzt werden. Beim Kontaktformular werden Name, E-Mail, PLZ, optionale Telefonnummer, Projektart und Nachricht über FormSubmit per E-Mail an den Betreiber übermittelt.</p>
+    <p>Diese Website kann ohne Benutzerkonto genutzt werden. Beim Kontaktformular werden Name, E-Mail, PLZ, optionale Telefonnummer, Projektart, Nachricht und gegebenenfalls die PV-Rechenwerte über den externen Dienst FormSubmit per E-Mail an den Betreiber übermittelt. Eine Weitergabe an Solarfirmen darf nur nach gesonderter Einwilligung und Klärung des tatsächlichen Empfängers erfolgen. Die rechtliche Prüfung des Dienstes, der Datenübermittlung und der Speicherdauer ist vor dem Produktivbetrieb erforderlich.</p>
     <p>Aktuell werden keine Analytics-Dienste, keine Werbe-Cookies und keine Affiliate-Tracking-Skripte geladen. Wenn solche Dienste später eingesetzt werden, müssen Datenschutzhinweise und Einwilligung entsprechend erweitert werden.</p>
   </section>
 </body>
