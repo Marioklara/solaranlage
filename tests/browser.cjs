@@ -53,6 +53,19 @@ async function main() {
   await page.locator('input[name="datenschutz_zustimmung"]').check();
   assert.equal(await page.locator("#solarLeadForm").evaluate(f=>f.checkValidity()),true,"Complete form is valid");
   // Do not submit form: external FormSubmit delivery and privacy cannot be tested synthetically.
+  // Desktop navigation, no-storage scenario and all 12 published pages.
+  await page.setViewportSize({width:1280,height:900});
+  await page.goto(origin+"/");
+  assert.equal(await page.locator(".nav-toggle").isVisible(),false,"Desktop menu toggle stays hidden");
+  assert.equal(await page.locator(".nav-links").isVisible(),true,"Desktop links are visible");
+  await page.locator("#storageWanted").selectOption("no");
+  await page.locator('#pvCalculator button[type="submit"]').click();
+  assert.match(await page.locator("#pvResult").innerText(),/kein Speicher/i);
+  for (const route of ["/","/pv-rechner/","/stromspeicher/","/solaranlage-kosten/","/photovoltaik-vergleich/","/waermepumpe/","/solar-foerderung/","/ratgeber/","/solaranlage-heidelberg/","/photovoltaik-mannheim/","/solaranlage-schwetzingen/","/pv-anlage-karlsruhe/"]) {
+    const response = await page.goto(origin+route,{waitUntil:"load"});
+    assert.equal(response.status(),200,"Missing page: "+route);
+    assert.ok(await page.locator(".nav-links a").count()>0,"No navigation links: "+route);
+  }
   assert.deepEqual(errors,[],"No JavaScript runtime errors");
   console.log("Browser-Checks OK: mobile menu, page navigation, PV inputs, calculation, storage and lead handoff.");
 }
