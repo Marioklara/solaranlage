@@ -8,12 +8,16 @@ Die Website ist **kein aktives Vergleichsportal mit angeschlossenen Solarfirmen*
 - PV-Rechner mit Plausibilitätsprüfung von Dachfläche, Stromverbrauch, Strompreis, PLZ und weiteren Angaben
 - Berücksichtigung von Dachausrichtung, Verschattung und optionalem Stromspeicher
 - Separate Modellwerte für Haushalts-Eigenverbrauch, Stromkosteneinsparung, Einspeiseerlöse, Betriebskosten und einfache Amortisation
+- Direkter PV-Szenarienvergleich **mit und ohne Stromspeicher** inklusive Modellkosten und Eigenversorgung
 - Speicher-Vergleich auf Basis von PV-Größe **und** Jahresstromverbrauch
 - Übergabe der PV-Eckdaten in das Kontaktformular (nur auf der Startseite)
-- Kontaktformular über den externen Anbieter FormSubmit, mit CAPTCHA und Honeypot-Feld
-- Separater Einwilligungstext für die geplante Weitergabe an Solarfirmen
+- Kontaktformular über den externen Anbieter FormSubmit, mit CAPTCHA und Honeypot-Feld (echte Zustellung noch nicht geprüft)
+- Freiwillige, nicht vorausgewählte Kontaktoption für eine mögliche spätere Partnervermittlung; **keine** automatische Weitergabe
+- Qualifizierung über Eigentümerstatus, Projektzeitraum und Dachart
 - Responsive Mobilnavigation auf allen 12 HTML-Seiten
-- SEO-Seiten, sitemap.xml und robots.txt
+- SEO-Seiten mit individuellen regionalen Hinweisen, kanonischen URLs, sitemap.xml und robots.txt
+- Überarbeitete Startseite mit klaren CTAs, sichtbaren FAQ und transparentem Status
+- Praxis-Leitfaden für Betreiber: [Startplan und Partnerakquise](docs/STARTPLAN.md)
 
 ## Modellgrenzen
 
@@ -33,7 +37,7 @@ node --test tests/site.test.cjs
 
 GitHub Actions führt diese Prüfungen bei Pushes und Pull Requests aus (Workflow `.github/workflows/site-check.yml`). Zusätzlich installiert die CI Chromium/Playwright und prüft die Menüs, Formulare und Berechnungen im Browser auf Smartphone- und Desktop-Größe.
 
-Diese Prüfungen testen die PV-Rechenlogik, Eingabegrenzen, internen Datei-/Seitenlinks und die Formularstruktur. Zusätzlich läuft ein Browser-Smoke-Test. Es bleibt **kein** Realbetrieb-Test eines FormSubmit-Versands, kein umfassender Test auf allen Geräten und keine Bestätigung der rechtlichen Zulässigkeit.
+Diese Prüfungen testen die PV-Rechenlogik, Eingabegrenzen, internen Datei-/Seitenlinks und die Formularstruktur. Zusätzlich läuft ein Browser-Smoke-Test mit Screenshots auf Mobilgerät-/Desktop-Größen. CI speichert die Aufnahmen als GitHub-Actions-Artefakt für die Sichtprüfung. Es bleibt **kein** Realbetrieb-Test eines FormSubmit-Versands, kein umfassender Test auf allen Geräten und keine Bestätigung der rechtlichen Zulässigkeit.
 
 ## Vor dem Produktivbetrieb offen
 
