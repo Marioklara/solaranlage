@@ -513,3 +513,13 @@ a.card:hover, a.card:focus-visible { transform: translateY(-3px); box-shadow: 0 
   html { scroll-behavior: auto; }
   .nav-cta,.button,.grid-3>.card,.grid-4>.card { transition: none; transform:none !important; }
 }
+
+.scenario-compare { margin-top: 20px; border: 1px solid rgba(255,255,255,.28); padding: 14px 16px; border-radius: 12px; }
+.scenario-compare summary { cursor: pointer; font-weight: 800; }
+.scenario-compare .table-scroll { margin-top: 14px; }
+.scenario-compare .scenario-table { color: var(--ink); box-shadow: none; min-width: 430px; }
+.scenario-compare .scenario-table th, .scenario-compare .scenario-table td { font-size: 14px; padding: 10px; }
+.scenario-compare .result-disclaimer { margin-top: 12px; }
+.local-cta { margin: 22px 0 0; }
+.local-cta .button { width: auto; }
+@media(max-width:600px){ .local-cta .button { width: 100%; } }
