@@ -95,7 +95,7 @@ function calculateStorageOptions(pvSizeValue, annualUsageValue) {
   })) };
 }
 
-function renderResult(result) {
+function renderResult(result, comparison) {
   const target = document.getElementById("pvResult");
   if (!target) return;
   if (result.error) {
@@ -120,18 +120,36 @@ function renderResult(result) {
       <p>Speicher: ${result.storage ? formatNumber(result.batteryKwh) + " kWh (grobe Startgröße)" : "kein Speicher"} · Rechenwert Einspeisung: ${formatNumber(result.tariff * 100, 2)} ct/kWh</p>
       <p class="result-disclaimer">* Ohne Finanzierung, Steuern, Förderung, Preisänderungen und größere Reparaturen. Dachstatik, Lastprofil, reale Erträge und tatsächliche Einspeisevergütung müssen geprüft werden. Die PLZ verändert die Ertragsschätzung nicht.</p>
     </div>
+    <details class="scenario-compare">
+      <summary>Mit und ohne Speicher vergleichen</summary>
+      <div class="table-scroll"><table class="table scenario-table">
+        <thead><tr><th>Rechenwert</th><th>Ohne Speicher</th><th>Mit Speicher</th></tr></thead>
+        <tbody>
+        <tr><th>Gesamtkosten</th><td>${money(comparison.no.investment)}</td><td>${money(comparison.yes.investment)}</td></tr>
+        <tr><th>Eigenversorgung</th><td>${formatNumber(comparison.no.autonomyPercent)} %</td><td>${formatNumber(comparison.yes.autonomyPercent)} %</td></tr>
+        <tr><th>Vorteil/Jahr nach Betriebskosten</th><td>${money(comparison.no.yearlyNetBenefit)}</td><td>${money(comparison.yes.yearlyNetBenefit)}</td></tr>
+        <tr><th>Einfache Amortisation</th><td>${comparison.no.paybackYears ? formatNumber(comparison.no.paybackYears, 1) + " Jahre" : "–"}</td><td>${comparison.yes.paybackYears ? formatNumber(comparison.yes.paybackYears, 1) + " Jahre" : "–"}</td></tr>
+        </tbody>
+      </table></div>
+      <p class="result-disclaimer">Beide Szenarien beruhen auf vereinfachten Durchschnittswerten. Ein Speicher kann die Unabhängigkeit erhöhen, muss aber nicht wirtschaftlicher sein.</p>
+    </details>
     <a class="button result-cta" href="${document.getElementById("solarLeadForm") ? "#anfrage" : "../index.html#anfrage"}">Unverbindliche Anfrage stellen <span aria-hidden="true">→</span></a>`;
 }
 
 function calculatePv() {
   const get = (id) => document.getElementById(id)?.value;
-  const result = calculatePvEstimate({
+  const input = {
     roof: get("roofSize"), usage: get("usage"), people: get("people"),
     price: get("powerPrice"), tariff: get("feedInTariff"),
     storage: get("storageWanted"), houseType: get("houseType"),
     orientation: get("roofOrientation"), shading: get("shadeLevel"), zip: get("zip")
-  });
-  renderResult(result);
+  };
+  const result = calculatePvEstimate(input);
+  const comparison = result.error ? null : {
+    no: calculatePvEstimate({ ...input, storage: "no" }),
+    yes: calculatePvEstimate({ ...input, storage: "yes" })
+  };
+  renderResult(result, comparison);
   if (result.error) {
     const summary = document.getElementById("pvLeadSummary");
     const note = document.getElementById("calculatorTransferNotice");
