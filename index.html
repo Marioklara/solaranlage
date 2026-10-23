@@ -17,9 +17,7 @@
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"Organization","name":"PV-Angebot24","url":"https://marioklara.github.io/solaranlage/","email":"alsalehmohammad126@gmail.com","address":{"@type":"PostalAddress","streetAddress":"Peter-Glaser-Str. 10","postalCode":"68723","addressLocality":"Oftersheim","addressCountry":"DE"}}
   </script>
-  <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Ist der Solarvergleich kostenlos?","acceptedAnswer":{"@type":"Answer","text":"Ja, die Nutzung der Vergleichsseite ist kostenlos und unverbindlich."}},{"@type":"Question","name":"Sind die berechneten Kosten verbindlich?","acceptedAnswer":{"@type":"Answer","text":"Nein, der Rechner liefert nur eine grobe Orientierung. Verbindliche Preise kommen direkt vom Anbieter."}}]}
-  </script>
+
 </head>
 <body>
   <a class="skip-link" href="#rechner">Direkt zum Solar-Rechner</a>
@@ -58,7 +56,7 @@
     <section class="container" id="rechner">
       <div class="section-head center">
         <h2>Solar-Rechner für deine erste Einschätzung</h2>
-        <p class="muted">Der Rechner berücksichtigt grob Dachausrichtung und Verschattung. Er nutzt weiterhin Modellannahmen; Dachstatik, Lastprofil und Netzanschluss müssen Fachbetriebe prüfen.</p>
+        <p class="muted">Der Rechner berücksichtigt grob Dachausrichtung und Verschattung. Er nutzt weiterhin Modellannahmen; Dachstatik, Lastprofil und Netzanschluss müssen Fachbetriebe prüfen. <a href="https://www.verbraucherzentrale.de/wissen/energie/erneuerbare-energien/photovoltaik-was-bei-der-planung-einer-solaranlage-wichtig-ist-5574" rel="noopener noreferrer" target="_blank">PV-Grundlagen bei der Verbraucherzentrale ↗</a></p>
       </div>
       <div class="card">
         <form id="pvCalculator">
@@ -71,7 +69,7 @@
             <div><label for="usage">Stromverbrauch/Jahr in kWh</label><input id="usage" type="number" min="1000" max="100000" required value="4200"></div>
             <div><label for="people">Anzahl Personen</label><input id="people" type="number" min="1" max="12" step="1" required value="4"></div>
             <div><label for="powerPrice">Strompreis EUR/kWh</label><input id="powerPrice" type="number" min="0.1" max="2" required step="0.01" value="0.35"></div>
-            <div><label for="feedInTariff">Angenommene Einspeisevergütung (EUR/kWh)</label><input id="feedInTariff" type="number" min="0" max="0.3" step="0.001" value="0.077"><small class="field-note">Beispielwert, tatsächlichen Satz prüfen.</small></div>
+            <div><label for="feedInTariff">Angenommene Einspeisevergütung (EUR/kWh)</label><input id="feedInTariff" type="number" min="0" max="0.3" step="0.001" value="0.077"><small class="field-note">Beispielwert für kleine Anlagen (Stand 2026), bei größeren Anlagen und anderen Inbetriebnahmedaten abweichend. <a href="https://www.bundesnetzagentur.de/DE/Fachthemen/ElektrizitaetundGas/ErneuerbareEnergien/EEG_Foerderung/start.html" target="_blank" rel="noopener noreferrer">Offizielle EEG-Sätze ↗</a></small></div>
             <div><label for="storageWanted">Speicher gewünscht?</label><select id="storageWanted"><option value="yes">Ja</option><option value="no">Nein</option></select></div>
           </div>
           <button class="button" type="submit">Kosten und Ersparnis berechnen</button>
