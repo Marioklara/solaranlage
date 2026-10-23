@@ -119,7 +119,8 @@ function renderResult(result) {
       <p>Gesparte Stromkosten: ${money(result.savedGridCost)} · angenommene Einspeiseerlöse: ${money(result.feedInRevenue)} · geschätzte laufende Kosten: ${money(result.operatingCost)}/Jahr</p>
       <p>Speicher: ${result.storage ? formatNumber(result.batteryKwh) + " kWh (grobe Startgröße)" : "kein Speicher"} · Rechenwert Einspeisung: ${formatNumber(result.tariff * 100, 2)} ct/kWh</p>
       <p class="result-disclaimer">* Ohne Finanzierung, Steuern, Förderung, Preisänderungen und größere Reparaturen. Dachstatik, Lastprofil, reale Erträge und tatsächliche Einspeisevergütung müssen geprüft werden. Die PLZ verändert die Ertragsschätzung nicht.</p>
-    </div>`;
+    </div>
+    <a class="button result-cta" href="${document.getElementById("solarLeadForm") ? "#anfrage" : "../index.html#anfrage"}">Unverbindliche Anfrage stellen <span aria-hidden="true">→</span></a>`;
 }
 
 function calculatePv() {
@@ -131,6 +132,12 @@ function calculatePv() {
     orientation: get("roofOrientation"), shading: get("shadeLevel"), zip: get("zip")
   });
   renderResult(result);
+  if (result.error) {
+    const summary = document.getElementById("pvLeadSummary");
+    const note = document.getElementById("calculatorTransferNotice");
+    if (summary) summary.value = "";
+    if (note) note.hidden = true;
+  }
   if (!result.error) {
     const summary = document.getElementById("pvLeadSummary");
     const formZip = document.getElementById("formZip");
@@ -177,6 +184,14 @@ function initializeSite() {
       calculatePv();
     });
     calculatePv();
+    const invalidateLeadSummary = () => {
+      const summary = document.getElementById("pvLeadSummary");
+      const note = document.getElementById("calculatorTransferNotice");
+      if (summary) summary.value = "";
+      if (note) note.hidden = true;
+    };
+    calcForm.addEventListener("input", invalidateLeadSummary);
+    calcForm.addEventListener("change", invalidateLeadSummary);
   }
   document.getElementById("storagePvSize")?.addEventListener("input", updateStorageComparison);
   document.getElementById("storageUsage")?.addEventListener("input", updateStorageComparison);
