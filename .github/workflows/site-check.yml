@@ -27,3 +27,11 @@ jobs:
           npx playwright install chromium
       - name: Browser-Funktionen auf Smartphone testen
         run: node tests/browser.cjs
+      - name: Screenshots zur Sichtprüfung speichern
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: website-browser-screenshots
+          path: test-artifacts/
+          if-no-files-found: ignore
+          retention-days: 7
