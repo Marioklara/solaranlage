@@ -17,6 +17,8 @@ async function main() {
   page.on("pageerror",err=>errors.push(String(err)));
   await page.goto(origin+"/", {waitUntil:"load"});
   assert.ok(await page.locator(".nav-toggle").isVisible(),"Mobile toggle must be visible");
+  assert.ok(await page.locator(".hero h1").innerText(),"Hero heading visible");
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 2),true,"No mobile horizontal overflow");
   assert.equal(await page.locator(".nav-links").isVisible(),false,"Menu starts collapsed");
   await page.locator(".nav-toggle").click();
   assert.equal(await page.locator(".nav-links").isVisible(),true,"Menu opens");
@@ -49,15 +51,23 @@ async function main() {
   await page.locator('#solarLeadForm input[name="name"]').fill("Testperson");
   await page.locator('#solarLeadForm input[name="email"]').fill("test@example.org");
   assert.equal(await page.locator("#solarLeadForm").evaluate(f=>f.checkValidity()),false,"Consent is required");
-  await page.locator('input[name="partner_einwilligung"]').check();
+  await page.locator("#ownership").selectOption({label:"Ich bin Eigentümer/in"});
+  await page.locator("#timeline").selectOption({label:"innerhalb von 3 Monaten"});
   await page.locator('input[name="datenschutz_zustimmung"]').check();
-  assert.equal(await page.locator("#solarLeadForm").evaluate(f=>f.checkValidity()),true,"Complete form is valid");
+  assert.equal(await page.locator("#solarLeadForm").evaluate(f=>f.checkValidity()),true,"Required fields and privacy notice accepted");
+  assert.equal(await page.locator('input[name="partner_einwilligung"]').isChecked(),false,"Partner contact opt-in is voluntary");
+  await page.locator("#roofSize").fill("75");
+  assert.equal(await page.locator("#pvLeadSummary").inputValue(),"","Stale calculator values must be cleared when input changes");
+  await page.locator('#pvCalculator button[type="submit"]').click();
+  assert.ok((await page.locator("#pvLeadSummary").inputValue()).includes("Dach 75"),"New results transfer after recomputation");
+  assert.equal(await page.locator("#fragen details").count(),4,"Visible FAQ must be available");
   // Do not submit form: external FormSubmit delivery and privacy cannot be tested synthetically.
   // Desktop navigation, no-storage scenario and all 12 published pages.
   await page.setViewportSize({width:1280,height:900});
   await page.goto(origin+"/");
   assert.equal(await page.locator(".nav-toggle").isVisible(),false,"Desktop menu toggle stays hidden");
   assert.equal(await page.locator(".nav-links").isVisible(),true,"Desktop links are visible");
+  assert.ok(await page.locator('link[rel="canonical"]').count()===1,"Canonical URL present");
   await page.locator("#storageWanted").selectOption("no");
   await page.locator('#pvCalculator button[type="submit"]').click();
   assert.match(await page.locator("#pvResult").innerText(),/kein Speicher/i);
