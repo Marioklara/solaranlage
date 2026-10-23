@@ -52,6 +52,22 @@ test("calculator results and lead form are linked and protected against basic sp
   for(const id of ["pvCalculator","roofOrientation","shadeLevel","feedInTariff","pvResult","solarLeadForm","pvLeadSummary","formZip"])assert.ok(h.includes('id="'+id+'"'),id);
   for(const frag of ['name="_captcha" value="true"','name="_honey"','name="partner_einwilligung"','name="datenschutz_zustimmung"'])assert.ok(h.includes(frag),frag);
 });
+test("every public HTML page declares its own canonical URL",()=>{
+  for(const file of pages){
+    const h=fs.readFileSync(path.join(root,file),"utf8");
+    const expected="https://marioklara.github.io/solaranlage/"+(file==="index.html"?"":file.replace(/index\\.html$/,""));
+    assert.ok(h.includes('rel="canonical" href="'+expected+'"'),"Canonical missing or wrong: "+file);
+  }
+});
+test("lead qualification and voluntary partner opt-in are present",()=>{
+  const h=fs.readFileSync(path.join(root,"index.html"),"utf8");
+  for(const id of ["ownership","timeline","roofType","name","email","phone","formZip"]) assert.ok(h.includes('id="'+id+'"'),"Missing: "+id);
+  assert.ok(h.includes('name="partner_einwilligung"'),"Missing voluntary opt-in");
+  assert.ok(!h.includes('required name="partner_einwilligung"'),"Optional partner contact may not be required");
+  assert.ok(h.includes('name="datenschutz_zustimmung"'),"Missing privacy notice");
+  assert.ok(h.includes('id="fragen"'),"Visible FAQs required");
+  assert.ok(h.includes('href="#rechner"'),"Hero CTA required");
+});
 test("storage and calculator subpages have necessary fields",()=>{
   const a=fs.readFileSync(path.join(root,"pv-rechner/index.html"),"utf8");
   const b=fs.readFileSync(path.join(root,"stromspeicher/index.html"),"utf8");
