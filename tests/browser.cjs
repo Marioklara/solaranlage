@@ -18,6 +18,8 @@ async function main() {
   await page.goto(origin+"/", {waitUntil:"load"});
   assert.ok(await page.locator(".nav-toggle").isVisible(),"Mobile toggle must be visible");
   assert.ok(await page.locator(".hero h1").innerText(),"Hero heading visible");
+  require("node:fs").mkdirSync("test-artifacts",{recursive:true});
+  await page.screenshot({path:"test-artifacts/mobile-home.png",fullPage:true});
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 2),true,"No mobile horizontal overflow");
   assert.equal(await page.locator(".nav-links").isVisible(),false,"Menu starts collapsed");
   await page.locator(".nav-toggle").click();
@@ -33,6 +35,8 @@ async function main() {
   const result=await page.locator("#pvResult").innerText();
   assert.match(result,/Orientierende PV-Größe/);
   assert.match(result,/Anteil Eigenversorgung/);
+  await page.locator(".scenario-compare summary").click();
+  assert.equal(await page.locator(".scenario-compare tbody tr").count(),4,"Storage scenarios show four comparative rows");
   assert.ok(!result.includes("100 %"),"No 100 % autonomy from annual data");
   await page.locator("#roofSize").fill("5");
   assert.equal(await page.locator("#roofSize").evaluate(e=>e.checkValidity()),false,"Browser validates roof area");
@@ -68,6 +72,7 @@ async function main() {
   assert.equal(await page.locator(".nav-toggle").isVisible(),false,"Desktop menu toggle stays hidden");
   assert.equal(await page.locator(".nav-links").isVisible(),true,"Desktop links are visible");
   assert.ok(await page.locator('link[rel="canonical"]').count()===1,"Canonical URL present");
+  await page.screenshot({path:"test-artifacts/desktop-home.png",fullPage:true});
   await page.locator("#storageWanted").selectOption("no");
   await page.locator('#pvCalculator button[type="submit"]').click();
   assert.match(await page.locator("#pvResult").innerText(),/kein Speicher/i);
