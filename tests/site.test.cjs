@@ -55,7 +55,7 @@ test("calculator results and lead form are linked and protected against basic sp
 test("every public HTML page declares its own canonical URL",()=>{
   for(const file of pages){
     const h=fs.readFileSync(path.join(root,file),"utf8");
-    const expected="https://marioklara.github.io/solaranlage/"+(file==="index.html"?"":file.replace(/index\\.html$/,""));
+    const expected="https://marioklara.github.io/solaranlage/"+(file==="index.html"?"":file.slice(0,-"index.html".length));
     assert.ok(h.includes('rel="canonical" href="'+expected+'"'),"Canonical missing or wrong: "+file);
   }
 });
