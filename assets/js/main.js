@@ -184,14 +184,22 @@ function initializeSite() {
   document.querySelectorAll(".nav-toggle").forEach(button => {
     const menu = button.parentElement.querySelector(".nav-links");
     if (!menu) return;
+    const setMenuOpen = open => {
+      button.setAttribute("aria-expanded", String(open));
+      button.setAttribute("aria-label", open ? "Navigation schließen" : "Navigation öffnen");
+      menu.classList.toggle("is-open", open);
+    };
     button.addEventListener("click", () => {
-      const expanded = button.getAttribute("aria-expanded") === "true";
-      button.setAttribute("aria-expanded", String(!expanded));
-      menu.classList.toggle("is-open", !expanded);
+      setMenuOpen(button.getAttribute("aria-expanded") !== "true");
+    });
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && button.getAttribute("aria-expanded") === "true") {
+        setMenuOpen(false);
+        button.focus();
+      }
     });
     menu.querySelectorAll("a").forEach(link => link.addEventListener("click", () => {
-      button.setAttribute("aria-expanded", "false");
-      menu.classList.remove("is-open");
+      setMenuOpen(false);
     }));
   });
 
