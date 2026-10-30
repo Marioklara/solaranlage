@@ -103,7 +103,8 @@ function renderResult(result, comparison) {
     target.setAttribute("role", "alert");
     return;
   }
-  target.removeAttribute("role");
+  // Erfolg wird als höfliche Statusmeldung angekündigt; Fehler bleiben dringliche Alerts.
+  target.setAttribute("role", "status");
   // Ausschließlich berechnete Zahlen und feste HTML-Texte, keine unbereinigten Benutzereingaben.
   target.innerHTML = `
     <h3>Geschätztes Ergebnis</h3>
