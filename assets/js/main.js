@@ -211,14 +211,20 @@ function initializeSite() {
       calculatePv();
     });
     calculatePv();
-    const invalidateLeadSummary = () => {
+    const invalidateStaleCalculation = () => {
       const summary = document.getElementById("pvLeadSummary");
       const note = document.getElementById("calculatorTransferNotice");
+      const result = document.getElementById("pvResult");
       if (summary) summary.value = "";
       if (note) note.hidden = true;
+      // Do not show an outdated estimate while the user edits its input values.
+      if (result) {
+        result.textContent = "Eingaben geändert. Bitte erneut berechnen.";
+        result.setAttribute("role", "status");
+      }
     };
-    calcForm.addEventListener("input", invalidateLeadSummary);
-    calcForm.addEventListener("change", invalidateLeadSummary);
+    calcForm.addEventListener("input", invalidateStaleCalculation);
+    calcForm.addEventListener("change", invalidateStaleCalculation);
   }
   document.getElementById("storagePvSize")?.addEventListener("input", updateStorageComparison);
   document.getElementById("storageUsage")?.addEventListener("input", updateStorageComparison);
