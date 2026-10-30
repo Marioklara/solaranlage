@@ -79,6 +79,11 @@ async function main() {
   assert.ok(await page.locator("#storageResult tr").count()>=2,"Corrected input restores recommendations");
 
   await page.goto(origin+"/");
+  // Initial example preview must not silently become part of a real inquiry.
+  assert.match(await page.locator("#pvResult").innerText(),/Orientierende PV-Größe/,"Initial example preview remains available");
+  assert.equal(await page.locator("#pvLeadSummary").inputValue(),"","No example calculation is attached before an explicit submit");
+  assert.equal(await page.locator("#calculatorTransferNotice").isHidden(),true,"No transfer notice before the visitor calculates");
+  assert.equal(await page.locator("#formZip").inputValue(),"","Contact ZIP starts empty");
   await page.locator("#zip").fill("68723");
   await page.locator('#pvCalculator button[type="submit"]').click();
   assert.equal(await page.locator("#formZip").inputValue(),"68723","ZIP transfers to lead form");
