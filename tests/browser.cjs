@@ -48,11 +48,17 @@ async function main() {
   const result=await page.locator("#pvResult").innerText();
   assert.match(result,/Orientierende PV-Größe/);
   assert.match(result,/Anteil Eigenversorgung/);
+  assert.equal(await page.locator("#pvResult").getAttribute("role"),"status","Successful calculation is announced as a status");
   await page.locator(".scenario-compare summary").click();
   assert.equal(await page.locator(".scenario-compare tbody tr").count(),4,"Storage scenarios show four comparative rows");
   assert.ok(!result.includes("100 %"),"No 100 % autonomy from annual data");
   await page.locator("#roofSize").fill("5");
   assert.equal(await page.locator("#roofSize").evaluate(e=>e.checkValidity()),false,"Browser validates roof area");
+  await page.evaluate(() => calculatePv()); // Exercise the JS error path despite native form validation.
+  assert.equal(await page.locator("#pvResult").getAttribute("role"),"alert","Invalid calculation announces an error");
+  await page.locator("#roofSize").fill("70");
+  await page.locator('#pvCalculator button[type="submit"]').click();
+  assert.equal(await page.locator("#pvResult").getAttribute("role"),"status","Corrected calculation returns to polite status");
 
   await page.goto(origin+"/stromspeicher/");
   assert.ok(await page.locator("#storageResult tr").count()>=2);
