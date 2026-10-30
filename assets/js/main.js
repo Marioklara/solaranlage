@@ -162,7 +162,11 @@ function calculatePv() {
     const formZip = document.getElementById("formZip");
     const project = document.getElementById("project");
     if (summary) summary.value = `Dach ${result.input.roof} m²; Bedarf ${result.input.usage} kWh/Jahr; PV etwa ${formatNumber(result.pvKwp,1)} kWp; Speicher ${result.batteryKwh} kWh; Investition ca. ${money(result.investment)}; Jahresvorteil ca. ${money(result.yearlyNetBenefit)} (unverbindliche Modellrechnung)`;
-    if (formZip && !formZip.value && result.input.zip) formZip.value = result.input.zip;
+    // Update only values that the calculator filled itself; never overwrite a manually edited PLZ.
+    if (formZip && (!formZip.value || (formZip.dataset.pvAutoZip !== undefined && formZip.value === formZip.dataset.pvAutoZip))) {
+      formZip.value = result.input.zip;
+      formZip.dataset.pvAutoZip = result.input.zip;
+    }
     if (project) project.value = result.storage ? "Solaranlage mit Speicher" : "Solaranlage ohne Speicher";
     const note = document.getElementById("calculatorTransferNotice");
     if (note) note.hidden = false;
@@ -213,6 +217,8 @@ function initializeSite() {
     }));
   });
 
+  const formZip = document.getElementById("formZip");
+  formZip?.addEventListener("input", () => { delete formZip.dataset.pvAutoZip; });
   const calcForm = document.getElementById("pvCalculator");
   if (calcForm) {
     calcForm.addEventListener("submit", event => {
