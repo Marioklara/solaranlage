@@ -137,7 +137,7 @@ function renderResult(result, comparison) {
     <a class="button result-cta" href="${document.getElementById("solarLeadForm") ? "#anfrage" : "../index.html#anfrage"}">Unverbindliche Anfrage stellen <span aria-hidden="true">→</span></a>`;
 }
 
-function calculatePv() {
+function calculatePv({ transferToLead = true } = {}) {
   const get = (id) => document.getElementById(id)?.value;
   const input = {
     roof: get("roofSize"), usage: get("usage"), people: get("people"),
@@ -157,7 +157,9 @@ function calculatePv() {
     if (summary) summary.value = "";
     if (note) note.hidden = true;
   }
-  if (!result.error) {
+  // The initial preview uses example values. Attach them to a contact request only
+  // after the visitor explicitly submits the calculator.
+  if (!result.error && transferToLead) {
     const summary = document.getElementById("pvLeadSummary");
     const formZip = document.getElementById("formZip");
     const project = document.getElementById("project");
@@ -225,7 +227,7 @@ function initializeSite() {
       event.preventDefault();
       calculatePv();
     });
-    calculatePv();
+    calculatePv({ transferToLead: false });
     const invalidateStaleCalculation = () => {
       const summary = document.getElementById("pvLeadSummary");
       const note = document.getElementById("calculatorTransferNotice");
