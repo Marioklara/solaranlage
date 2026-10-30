@@ -82,6 +82,16 @@ async function main() {
   await page.locator("#zip").fill("68723");
   await page.locator('#pvCalculator button[type="submit"]').click();
   assert.equal(await page.locator("#formZip").inputValue(),"68723","ZIP transfers to lead form");
+  await page.locator("#zip").fill("69115");
+  await page.locator('#pvCalculator button[type="submit"]').click();
+  assert.equal(await page.locator("#formZip").inputValue(),"69115","Recalculation updates the automatically transferred ZIP");
+  await page.locator("#formZip").fill("68159");
+  await page.locator("#zip").fill("68723");
+  await page.locator('#pvCalculator button[type="submit"]').click();
+  assert.equal(await page.locator("#formZip").inputValue(),"68159","Manual contact ZIP must not be overwritten");
+  await page.locator("#formZip").fill("");
+  await page.locator('#pvCalculator button[type="submit"]').click();
+  assert.equal(await page.locator("#formZip").inputValue(),"68723","Empty contact ZIP can be filled by recalculation");
   assert.ok((await page.locator("#pvLeadSummary").inputValue()).includes("PV etwa"),"PV data transfers");
   await page.locator('#solarLeadForm input[name="name"]').fill("Testperson");
   await page.locator('#solarLeadForm input[name="email"]').fill("test@example.org");
