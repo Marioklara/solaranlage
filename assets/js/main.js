@@ -232,6 +232,13 @@ function initializeSite() {
       const result = document.getElementById("pvResult");
       if (summary) summary.value = "";
       if (note) note.hidden = true;
+      // A previously auto-filled contact ZIP is also stale after calculator edits.
+      // Never clear a ZIP that the visitor has entered or changed manually.
+      const formZip = document.getElementById("formZip");
+      if (formZip && formZip.dataset.pvAutoZip !== undefined && formZip.value === formZip.dataset.pvAutoZip) {
+        formZip.value = "";
+        delete formZip.dataset.pvAutoZip;
+      }
       // Do not show an outdated estimate while the user edits its input values.
       if (result) {
         result.textContent = "Eingaben geändert. Bitte erneut berechnen.";

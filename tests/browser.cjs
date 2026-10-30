@@ -83,10 +83,12 @@ async function main() {
   await page.locator('#pvCalculator button[type="submit"]').click();
   assert.equal(await page.locator("#formZip").inputValue(),"68723","ZIP transfers to lead form");
   await page.locator("#zip").fill("69115");
+  assert.equal(await page.locator("#formZip").inputValue(),"","Outdated auto-filled contact ZIP is cleared before recalculation");
   await page.locator('#pvCalculator button[type="submit"]').click();
   assert.equal(await page.locator("#formZip").inputValue(),"69115","Recalculation updates the automatically transferred ZIP");
   await page.locator("#formZip").fill("68159");
   await page.locator("#zip").fill("68723");
+  assert.equal(await page.locator("#formZip").inputValue(),"68159","Editing calculator must preserve manually entered contact ZIP");
   await page.locator('#pvCalculator button[type="submit"]').click();
   assert.equal(await page.locator("#formZip").inputValue(),"68159","Manual contact ZIP must not be overwritten");
   await page.locator("#formZip").fill("");
@@ -102,6 +104,7 @@ async function main() {
   assert.equal(await page.locator("#solarLeadForm").evaluate(f=>f.checkValidity()),true,"Required fields and privacy notice accepted");
   assert.equal(await page.locator('input[name="partner_einwilligung"]').isChecked(),false,"Partner contact opt-in is voluntary");
   await page.locator("#roofSize").fill("75");
+  assert.equal(await page.locator("#formZip").inputValue(),"","Editing non-ZIP calculator inputs also clears stale auto-filled contact ZIP");
   assert.equal(await page.locator("#pvLeadSummary").inputValue(),"","Stale calculator values must be cleared when input changes");
   assert.equal(await page.locator("#pvResult").innerText(),"Eingaben geändert. Bitte erneut berechnen.","Lead form must not show an outdated PV result");
   assert.equal(await page.locator(".scenario-compare").count(),0,"Outdated scenario comparison is removed until recalculation");
