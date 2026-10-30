@@ -174,11 +174,20 @@ function updateStorageComparison() {
   const output = document.getElementById("storageResult");
   if (!output) return;
   const answer = calculateStorageOptions(document.getElementById("storagePvSize")?.value, document.getElementById("storageUsage")?.value);
+  const feedback = document.getElementById("storageFeedback");
   if (answer.error) {
     output.innerHTML = `<tr><td colspan="4">${answer.error}</td></tr>`;
+    if (feedback) {
+      feedback.setAttribute("role", "alert");
+      feedback.textContent = answer.error;
+    }
     return;
   }
   output.innerHTML = answer.options.map(option => `<tr><td>${option.title}</td><td>${option.capacity} kWh</td><td>${money(option.estimatedCost)}</td><td>${option.note}</td></tr>`).join("");
+  if (feedback) {
+    feedback.setAttribute("role", "status");
+    feedback.textContent = `Speichervergleich aktualisiert für ${formatNumber(readNumber(document.getElementById("storagePvSize")?.value), 1)} kWp und ${formatNumber(readNumber(document.getElementById("storageUsage")?.value))} kWh Jahresverbrauch.`;
+  }
 }
 
 function initializeSite() {
