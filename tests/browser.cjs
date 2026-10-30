@@ -53,6 +53,8 @@ async function main() {
   assert.equal(await page.locator(".scenario-compare tbody tr").count(),4,"Storage scenarios show four comparative rows");
   assert.ok(!result.includes("100 %"),"No 100 % autonomy from annual data");
   await page.locator("#roofSize").fill("5");
+  assert.equal(await page.locator("#pvResult").innerText(),"Eingaben geändert. Bitte erneut berechnen.","Old PV estimate is hidden when inputs change");
+  assert.equal(await page.locator("#pvResult").getAttribute("role"),"status","Recalculation notice is accessible");
   assert.equal(await page.locator("#roofSize").evaluate(e=>e.checkValidity()),false,"Browser validates roof area");
   await page.evaluate(() => calculatePv()); // Exercise the JS error path despite native form validation.
   assert.equal(await page.locator("#pvResult").getAttribute("role"),"alert","Invalid calculation announces an error");
@@ -81,6 +83,8 @@ async function main() {
   assert.equal(await page.locator('input[name="partner_einwilligung"]').isChecked(),false,"Partner contact opt-in is voluntary");
   await page.locator("#roofSize").fill("75");
   assert.equal(await page.locator("#pvLeadSummary").inputValue(),"","Stale calculator values must be cleared when input changes");
+  assert.equal(await page.locator("#pvResult").innerText(),"Eingaben geändert. Bitte erneut berechnen.","Lead form must not show an outdated PV result");
+  assert.equal(await page.locator(".scenario-compare").count(),0,"Outdated scenario comparison is removed until recalculation");
   await page.locator('#pvCalculator button[type="submit"]').click();
   assert.ok((await page.locator("#pvLeadSummary").inputValue()).includes("Dach 75"),"New results transfer after recomputation");
   assert.equal(await page.locator("#fragen details").count(),4,"Visible FAQ must be available");
