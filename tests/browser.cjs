@@ -65,8 +65,18 @@ async function main() {
   await page.goto(origin+"/stromspeicher/");
   assert.ok(await page.locator("#storageResult tr").count()>=2);
   const initial=await page.locator("#storageResult").innerText();
+  assert.equal(await page.locator("#storageFeedback").getAttribute("role"),"status","Valid storage result has a polite announcement");
+  assert.match(await page.locator("#storageFeedback").innerText(),/4\\.200 kWh/,"Initial storage usage is announced");
   await page.locator("#storageUsage").fill("9000");
   assert.notEqual(await page.locator("#storageResult").innerText(),initial,"Consumption affects storage recommendations");
+  assert.match(await page.locator("#storageFeedback").innerText(),/9\\.000 kWh/,"Updated usage is announced");
+  await page.locator("#storageUsage").fill("0");
+  assert.equal(await page.locator("#storageFeedback").getAttribute("role"),"alert","Invalid storage input is announced as an error");
+  assert.match(await page.locator("#storageFeedback").innerText(),/zwischen 1\\.000 und 100\\.000/);
+  assert.equal(await page.locator("#storageResult tr").count(),1,"Invalid input does not retain old storage recommendations");
+  await page.locator("#storageUsage").fill("5000");
+  assert.equal(await page.locator("#storageFeedback").getAttribute("role"),"status","Corrected storage input returns to status");
+  assert.ok(await page.locator("#storageResult tr").count()>=2,"Corrected input restores recommendations");
 
   await page.goto(origin+"/");
   await page.locator("#zip").fill("68723");
