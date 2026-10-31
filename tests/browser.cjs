@@ -115,6 +115,14 @@ async function main() {
   assert.equal(await page.locator(".scenario-compare").count(),0,"Outdated scenario comparison is removed until recalculation");
   await page.locator('#pvCalculator button[type="submit"]').click();
   assert.ok((await page.locator("#pvLeadSummary").inputValue()).includes("Dach 75"),"New results transfer after recomputation");
+  // Recalculation may update an automatically chosen project, never a visitor's choice.
+  await page.locator("#storageWanted").selectOption("no");
+  await page.locator('#pvCalculator button[type="submit"]').click();
+  assert.equal(await page.locator("#project").inputValue(),"Solaranlage ohne Speicher","Automatic project tracks a new calculation");
+  await page.locator("#project").selectOption("Wärmepumpe mit PV planen");
+  await page.locator("#storageWanted").selectOption("yes");
+  await page.locator('#pvCalculator button[type="submit"]').click();
+  assert.equal(await page.locator("#project").inputValue(),"Wärmepumpe mit PV planen","Manual project selection survives recalculation");
   assert.equal(await page.locator("#fragen details").count(),4,"Visible FAQ must be available");
   // Do not submit form: external FormSubmit delivery and privacy cannot be tested synthetically.
   // Desktop navigation, no-storage scenario and all 12 published pages.

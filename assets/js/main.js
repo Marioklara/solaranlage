@@ -169,7 +169,7 @@ function calculatePv({ transferToLead = true } = {}) {
       formZip.value = result.input.zip;
       formZip.dataset.pvAutoZip = result.input.zip;
     }
-    if (project) project.value = result.storage ? "Solaranlage mit Speicher" : "Solaranlage ohne Speicher";
+    if (project && project.dataset.pvManualSelection !== "true") project.value = result.storage ? "Solaranlage mit Speicher" : "Solaranlage ohne Speicher";
     const note = document.getElementById("calculatorTransferNotice");
     if (note) note.hidden = false;
   }
@@ -221,6 +221,10 @@ function initializeSite() {
 
   const formZip = document.getElementById("formZip");
   formZip?.addEventListener("input", () => { delete formZip.dataset.pvAutoZip; });
+  // Respect a project type selected explicitly in the contact form.
+  document.getElementById("project")?.addEventListener("change", event => {
+    event.currentTarget.dataset.pvManualSelection = "true";
+  });
   const calcForm = document.getElementById("pvCalculator");
   if (calcForm) {
     calcForm.addEventListener("submit", event => {
