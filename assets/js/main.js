@@ -211,6 +211,11 @@ function initializeSite() {
     button.addEventListener("click", () => {
       setMenuOpen(button.getAttribute("aria-expanded") !== "true");
     });
+    // The desktop layout always displays navigation links. Clear the mobile
+    // state when crossing the breakpoint so it cannot reopen unexpectedly.
+    window.matchMedia("(min-width: 901px)").addEventListener("change", event => {
+      if (event.matches) setMenuOpen(false);
+    });
     document.addEventListener("keydown", event => {
       if (event.key === "Escape" && button.getAttribute("aria-expanded") === "true") {
         setMenuOpen(false);

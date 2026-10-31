@@ -36,6 +36,15 @@ async function main() {
   await page.keyboard.press("Escape");
   assert.equal(await page.locator(".nav-links").isVisible(),false,"Escape also works from a menu link");
   assert.equal(await page.locator(".nav-toggle").evaluate(e=>document.activeElement===e),true,"Menu link focus returns to toggle");
+  // Regression: opening mobile navigation then resizing to desktop and back
+  // must not leave an invisible expanded state or unexpectedly reopen the menu.
+  await page.locator(".nav-toggle").click();
+  await page.setViewportSize({width:1280,height:900});
+  assert.equal(await page.locator(".nav-toggle").getAttribute("aria-expanded"),"false","Desktop transition resets mobile menu state");
+  assert.equal(await page.locator(".nav-links").isVisible(),true,"Desktop navigation remains visible");
+  await page.setViewportSize({width:390,height:844});
+  assert.equal(await page.locator(".nav-links").isVisible(),false,"Returning to mobile keeps navigation closed");
+  assert.equal(await page.locator(".nav-toggle").getAttribute("aria-expanded"),"false","Mobile toggle matches collapsed menu after resize");
   await page.locator(".nav-toggle").click();
   await page.locator(".nav-links a").first().click();
   assert.ok(page.url().includes("/pv-rechner/"),"Mobile menu navigates");
