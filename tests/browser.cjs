@@ -20,6 +20,19 @@ async function main() {
   assert.ok(await page.locator(".hero h1").innerText(),"Hero heading visible");
   require("node:fs").mkdirSync("test-artifacts",{recursive:true});
   await page.screenshot({path:"test-artifacts/mobile-home.png",fullPage:true});
+  // Mobile menu toggle needs a strong keyboard focus ring on its white background.
+  await page.locator(".logo").focus();
+  await page.keyboard.press("Tab");
+  const menuFocus = await page.locator(".nav-toggle").evaluate(element => ({
+    focused: document.activeElement === element,
+    visible: element.matches(":focus-visible"),
+    width: getComputedStyle(element).outlineWidth,
+    color: getComputedStyle(element).outlineColor
+  }));
+  assert.equal(menuFocus.focused, true, "Tab reaches mobile navigation button");
+  assert.equal(menuFocus.visible, true, "Mobile navigation shows keyboard focus");
+  assert.equal(menuFocus.width, "3px", "Mobile navigation has a strong focus ring");
+  assert.equal(menuFocus.color, "rgb(7, 86, 62)", "Mobile navigation focus is dark green, not pale gold");
   // Regression: the generic pale input:focus outline must not hide the
   // high-contrast keyboard-only focus ring on form controls.
   await page.locator("#roofSize").click();
