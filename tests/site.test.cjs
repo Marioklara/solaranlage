@@ -66,6 +66,7 @@ test("lead qualification and voluntary partner opt-in are present",()=>{
   assert.ok(!h.includes('required name="partner_einwilligung"'),"Optional partner contact may not be required");
   assert.ok(h.includes('name="datenschutz_zustimmung"'),"Missing privacy notice");
   assert.ok(h.includes('id="fragen"'),"Visible FAQs required");
+  assert.match(h, /<select id="project" name="projektart" required><option value="" selected disabled>/, "Project type must not be preselected without calculation");
   assert.ok(h.includes('href="#rechner"'),"Hero CTA required");
 });
 test("storage and calculator subpages have necessary fields",()=>{
