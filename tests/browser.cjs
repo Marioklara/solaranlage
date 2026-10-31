@@ -20,6 +20,20 @@ async function main() {
   assert.ok(await page.locator(".hero h1").innerText(),"Hero heading visible");
   require("node:fs").mkdirSync("test-artifacts",{recursive:true});
   await page.screenshot({path:"test-artifacts/mobile-home.png",fullPage:true});
+  // Regression: the generic pale input:focus outline must not hide the
+  // high-contrast keyboard-only focus ring on form controls.
+  await page.locator("#roofSize").click();
+  await page.keyboard.press("Tab");
+  const keyboardFocus = await page.locator("#usage").evaluate(element => ({
+    focused: document.activeElement === element,
+    visible: element.matches(":focus-visible"),
+    width: getComputedStyle(element).outlineWidth,
+    color: getComputedStyle(element).outlineColor
+  }));
+  assert.equal(keyboardFocus.focused, true, "Tab reaches the next calculator input");
+  assert.equal(keyboardFocus.visible, true, "Keyboard focus uses :focus-visible");
+  assert.equal(keyboardFocus.width, "3px", "Keyboard focus ring is not overridden by pale mouse-focus styling");
+  assert.equal(keyboardFocus.color, "rgb(7, 86, 62)", "Keyboard focus ring has the dark green high-contrast color");
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 2),true,"No mobile horizontal overflow");
   assert.equal(await page.locator(".nav-links").isVisible(),false,"Menu starts collapsed");
   await page.locator(".nav-toggle").click();
