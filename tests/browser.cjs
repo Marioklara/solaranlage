@@ -32,6 +32,10 @@ async function main() {
   assert.equal(await page.locator(".nav-toggle").getAttribute("aria-label"),"Navigation öffnen","Closed menu has an open label");
   assert.equal(await page.locator(".nav-toggle").evaluate(e=>document.activeElement===e),true,"Focus returns to menu button");
   await page.locator(".nav-toggle").click();
+  await page.locator(".hero h1").click();
+  assert.equal(await page.locator(".nav-links").isVisible(),false,"Click outside closes mobile navigation");
+  assert.equal(await page.locator(".nav-toggle").getAttribute("aria-expanded"),"false","Outside click resets accessible expanded state");
+  await page.locator(".nav-toggle").click();
   await page.locator(".nav-links a").first().focus();
   await page.keyboard.press("Escape");
   assert.equal(await page.locator(".nav-links").isVisible(),false,"Escape also works from a menu link");
@@ -40,6 +44,8 @@ async function main() {
   // must not leave an invisible expanded state or unexpectedly reopen the menu.
   await page.locator(".nav-toggle").click();
   await page.setViewportSize({width:1280,height:900});
+  // matchMedia change notifications can run after viewport resizing resolves.
+  await page.waitForFunction(() => document.querySelector(".nav-toggle")?.getAttribute("aria-expanded") === "false");
   assert.equal(await page.locator(".nav-toggle").getAttribute("aria-expanded"),"false","Desktop transition resets mobile menu state");
   assert.equal(await page.locator(".nav-links").isVisible(),true,"Desktop navigation remains visible");
   await page.setViewportSize({width:390,height:844});
