@@ -225,6 +225,14 @@ function initializeSite() {
     menu.querySelectorAll("a").forEach(link => link.addEventListener("click", () => {
       setMenuOpen(false);
     }));
+    // Close the mobile menu when interacting elsewhere on the page.
+    // Do not steal focus from the visitor's selected element.
+    document.addEventListener("click", event => {
+      if (button.getAttribute("aria-expanded") === "true" &&
+          !button.contains(event.target) && !menu.contains(event.target)) {
+        setMenuOpen(false);
+      }
+    });
   });
 
   const formZip = document.getElementById("formZip");
