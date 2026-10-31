@@ -73,6 +73,12 @@ img {
   cursor: pointer;
 }
 
+/* The default gold outline is too pale against the white menu button. */
+.nav-toggle:focus-visible {
+  outline: 3px solid var(--green-dark);
+  outline-offset: 3px;
+}
+
 .nav-links {
   display: flex;
   align-items: center;
