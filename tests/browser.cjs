@@ -84,13 +84,17 @@ async function main() {
   assert.equal(await page.locator("#pvLeadSummary").inputValue(),"","No example calculation is attached before an explicit submit");
   assert.equal(await page.locator("#calculatorTransferNotice").isHidden(),true,"No transfer notice before the visitor calculates");
   assert.equal(await page.locator("#formZip").inputValue(),"","Contact ZIP starts empty");
+  assert.equal(await page.locator("#project").inputValue(),"","No project type is silently preselected");
   await page.locator("#zip").fill("68723");
   await page.locator('#pvCalculator button[type="submit"]').click();
   assert.equal(await page.locator("#formZip").inputValue(),"68723","ZIP transfers to lead form");
+  assert.equal(await page.locator("#project").inputValue(),"Solaranlage mit Speicher","Valid calculation sets a matching project type");
   await page.locator("#zip").fill("69115");
   assert.equal(await page.locator("#formZip").inputValue(),"","Outdated auto-filled contact ZIP is cleared before recalculation");
+  assert.equal(await page.locator("#project").inputValue(),"","Outdated auto-filled project type is cleared before recalculation");
   await page.locator('#pvCalculator button[type="submit"]').click();
   assert.equal(await page.locator("#formZip").inputValue(),"69115","Recalculation updates the automatically transferred ZIP");
+  assert.equal(await page.locator("#project").inputValue(),"Solaranlage mit Speicher","Recalculation restores a matching project type");
   await page.locator("#formZip").fill("68159");
   await page.locator("#zip").fill("68723");
   assert.equal(await page.locator("#formZip").inputValue(),"68159","Editing calculator must preserve manually entered contact ZIP");
@@ -123,6 +127,8 @@ async function main() {
   await page.locator("#storageWanted").selectOption("yes");
   await page.locator('#pvCalculator button[type="submit"]').click();
   assert.equal(await page.locator("#project").inputValue(),"Wärmepumpe mit PV planen","Manual project selection survives recalculation");
+  await page.locator("#roofSize").fill("80");
+  assert.equal(await page.locator("#project").inputValue(),"Wärmepumpe mit PV planen","Manual project selection also survives input changes");
   assert.equal(await page.locator("#fragen details").count(),4,"Visible FAQ must be available");
   // Do not submit form: external FormSubmit delivery and privacy cannot be tested synthetically.
   // Desktop navigation, no-storage scenario and all 12 published pages.
