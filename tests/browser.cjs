@@ -44,6 +44,8 @@ async function main() {
   // must not leave an invisible expanded state or unexpectedly reopen the menu.
   await page.locator(".nav-toggle").click();
   await page.setViewportSize({width:1280,height:900});
+  // matchMedia change notifications can run after viewport resizing resolves.
+  await page.waitForFunction(() => document.querySelector(".nav-toggle")?.getAttribute("aria-expanded") === "false");
   assert.equal(await page.locator(".nav-toggle").getAttribute("aria-expanded"),"false","Desktop transition resets mobile menu state");
   assert.equal(await page.locator(".nav-links").isVisible(),true,"Desktop navigation remains visible");
   await page.setViewportSize({width:390,height:844});
