@@ -459,6 +459,11 @@ body { line-height: 1.55; }
 .form-grid { gap: 18px; }
 input, select, textarea { border-radius: 10px; }
 input:focus, select:focus, textarea:focus { border-color: var(--green); outline: 2px solid rgba(15,128,94,.20); }
+/* Keyboard focus must remain visible against white form fields. */
+input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 3px solid var(--green-dark);
+  outline-offset: 2px;
+}
 .result-box { border-radius: 14px; padding: 24px; }
 .result-grid { grid-template-columns: repeat(4,minmax(0,1fr)); }
 .metric { min-width: 0; border-radius: 10px; }
