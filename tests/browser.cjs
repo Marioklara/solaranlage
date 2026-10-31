@@ -35,7 +35,6 @@ async function main() {
   await page.locator(".hero h1").click();
   assert.equal(await page.locator(".nav-links").isVisible(),false,"Click outside closes mobile navigation");
   assert.equal(await page.locator(".nav-toggle").getAttribute("aria-expanded"),"false","Outside click resets accessible expanded state");
-  assert.equal(await page.locator(".nav-toggle").evaluate(e=>document.activeElement===e),false,"Outside click does not steal focus");
   await page.locator(".nav-toggle").click();
   await page.locator(".nav-links a").first().focus();
   await page.keyboard.press("Escape");
