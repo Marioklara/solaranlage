@@ -75,3 +75,19 @@ test("storage and calculator subpages have necessary fields",()=>{
   for(const id of ["roofOrientation","shadeLevel","feedInTariff"])assert.ok(a.includes('id="'+id+'"'));
   for(const id of ["storagePvSize","storageUsage","storageResult"])assert.ok(b.includes('id="'+id+'"'));
 });
+
+
+test("homepage does not publish unverified Organization structured data",()=>{
+  const h=fs.readFileSync(path.join(root,"index.html"),"utf8");
+  for(const [,raw] of h.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)){
+    const data=JSON.parse(raw);
+    const nodes=Array.isArray(data)?data:[data];
+    for(const node of nodes){
+      const entries=Array.isArray(node["@graph"])?node["@graph"]:[node];
+      for(const entry of entries){
+        const types=Array.isArray(entry["@type"])?entry["@type"]:[entry["@type"]];
+        assert.ok(!types.includes("Organization"),"Unverified Organization markup must not be published");
+      }
+    }
+  }
+});
