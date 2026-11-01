@@ -59,6 +59,11 @@ async function main() {
   assert.equal(await page.locator(".nav-toggle").getAttribute("aria-label"),"Navigation öffnen","Closed menu has an open label");
   assert.equal(await page.locator(".nav-toggle").evaluate(e=>document.activeElement===e),true,"Focus returns to menu button");
   await page.locator(".nav-toggle").click();
+  await page.locator(".nav-links a").last().focus();
+  await page.keyboard.press("Tab");
+  assert.equal(await page.locator(".nav-links").isVisible(),false,"Tabbing out of mobile links closes the menu");
+  assert.equal(await page.locator(".nav-toggle").getAttribute("aria-expanded"),"false","Keyboard focus exit resets expanded state");
+  await page.locator(".nav-toggle").click();
   await page.locator(".hero h1").click();
   assert.equal(await page.locator(".nav-links").isVisible(),false,"Click outside closes mobile navigation");
   assert.equal(await page.locator(".nav-toggle").getAttribute("aria-expanded"),"false","Outside click resets accessible expanded state");

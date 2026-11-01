@@ -225,6 +225,14 @@ function initializeSite() {
     menu.querySelectorAll("a").forEach(link => link.addEventListener("click", () => {
       setMenuOpen(false);
     }));
+    // When keyboard focus leaves the menu, close it instead of leaving
+    // an expanded overlay behind while the visitor tabs through the page.
+    menu.addEventListener("focusout", event => {
+      if (button.getAttribute("aria-expanded") === "true" &&
+          !menu.contains(event.relatedTarget) && !button.contains(event.relatedTarget)) {
+        setMenuOpen(false);
+      }
+    });
     // Close the mobile menu when interacting elsewhere on the page.
     // Do not steal focus from the visitor's selected element.
     document.addEventListener("click", event => {
