@@ -8,6 +8,16 @@ const root=path.resolve(__dirname,"..");
 const pages=["index.html","pv-rechner/index.html","stromspeicher/index.html","solaranlage-kosten/index.html","photovoltaik-vergleich/index.html","waermepumpe/index.html","solar-foerderung/index.html","ratgeber/index.html","solaranlage-heidelberg/index.html","photovoltaik-mannheim/index.html","solaranlage-schwetzingen/index.html","pv-anlage-karlsruhe/index.html"];
 const calc=(over={})=>estimate({roof:70,usage:4200,people:4,price:0.25,tariff:0.077,storage:true,houseType:"single",orientation:"south",shading:"low",zip:"68723",...over});
 test("German decimal input",()=>{assert.equal(readNumber("0,25"),0.25);assert.ok(Number.isNaN(readNumber("")))});
+test("reject ambiguous numeric notation instead of silently changing estimates",()=>{
+  for(const bad of ["0x46","0b1000110","1e3","70px","1,2,3"," ",[],null,Infinity]) {
+    assert.ok(Number.isNaN(readNumber(bad)), "Must reject: "+String(bad));
+  }
+  assert.equal(readNumber(" 70 "),70);
+  assert.equal(readNumber(",25"),0.25);
+  assert.ok(calc({roof:"0x46"}).error,"Hexadecimal roof size must not be accepted");
+  assert.ok(calc({usage:"4.2e3"}).error,"Scientific notation must not be accepted");
+  assert.ok(storage("0x8","4200").error,"Storage comparison uses the same strict parser");
+});
 test("sample household: energy balance, plausible autarky, nonnegative financials",()=>{
   const r=calc();
   assert.equal(r.error,undefined);
