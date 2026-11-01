@@ -11,8 +11,12 @@ const PV_ASSUMPTIONS = Object.freeze({
 });
 
 function readNumber(value) {
-  if (typeof value === "string" && value.trim() === "") return NaN;
-  return Number(String(value).replace(",", "."));
+  // Number() also accepts hexadecimal, scientific notation and empty arrays.
+  // For a household estimate, only ordinary decimal input is unambiguous.
+  if (typeof value !== "string" && typeof value !== "number") return NaN;
+  const normalized = String(value).trim().replace(",", ".");
+  if (!/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(normalized)) return NaN;
+  return Number(normalized);
 }
 
 function money(value) {
