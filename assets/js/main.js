@@ -30,6 +30,10 @@ function calculatePvEstimate(input) {
   const price = readNumber(input.price);
   const tariff = input.tariff === undefined ? PV_ASSUMPTIONS.feedInTariff : readNumber(input.tariff);
   const storage = input.storage === true || input.storage === "yes";
+  // Unsupported storage values must not silently turn a requested battery into "no battery".
+  if (![undefined, true, false, "yes", "no"].includes(input.storage)) {
+    return { error: "Bitte eine gültige Auswahl zum Stromspeicher treffen." };
+  }
   const houseType = input.houseType || "single";
   const orientation = input.orientation || "south";
   const shading = input.shading || "low";
