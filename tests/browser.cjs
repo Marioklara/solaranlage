@@ -96,6 +96,8 @@ async function main() {
   assert.match(result,/Orientierende PV-Größe/);
   assert.match(result,/Anteil Eigenversorgung/);
   assert.equal(await page.locator("#pvResult").getAttribute("role"),"status","Successful calculation is announced as a status");
+  assert.equal(await page.locator("#pvResult").evaluate(e => document.activeElement === e),true,"Keyboard focus moves to the updated result after submission");
+  assert.equal(await page.locator("#pvResult").getAttribute("tabindex"),"-1","Result can receive focus without adding an extra Tab stop");
   await page.locator(".scenario-compare summary").click();
   assert.equal(await page.locator(".scenario-compare tbody tr").count(),4,"Storage scenarios show four comparative rows");
   assert.ok(!result.includes("100 %"),"No 100 % autonomy from annual data");
@@ -129,6 +131,7 @@ async function main() {
   // Initial example preview must not silently become part of a real inquiry.
   assert.match(await page.locator("#pvResult").innerText(),/Orientierende PV-Größe/,"Initial example preview remains available");
   assert.equal(await page.locator("#pvLeadSummary").inputValue(),"","No example calculation is attached before an explicit submit");
+  assert.equal(await page.locator("#pvResult").evaluate(e => document.activeElement === e),false,"Initial example preview must not steal keyboard focus");
   assert.equal(await page.locator("#calculatorTransferNotice").isHidden(),true,"No transfer notice before the visitor calculates");
   assert.equal(await page.locator("#formZip").inputValue(),"","Contact ZIP starts empty");
   assert.equal(await page.locator("#project").inputValue(),"","No project type is silently preselected");
