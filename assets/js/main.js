@@ -259,6 +259,13 @@ function initializeSite() {
     calcForm.addEventListener("submit", event => {
       event.preventDefault();
       calculatePv();
+      // Place keyboard focus on the updated result, not the now distant submit button.
+      // The initial example preview must never steal focus on page load.
+      const result = document.getElementById("pvResult");
+      if (result) {
+        result.tabIndex = -1;
+        result.focus();
+      }
     });
     calculatePv({ transferToLead: false });
     const invalidateStaleCalculation = () => {
