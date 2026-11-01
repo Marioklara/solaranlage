@@ -23,7 +23,14 @@ test("battery increases self-supply without 100% independence",()=>{
   assert.equal(no.batteryKwh,0);assert.ok(no.autonomyPercent<=35);
   assert.ok(yes.autonomyPercent>no.autonomyPercent);
 });
-test("invalid inputs rejected",()=>{for(const bad of [{roof:0},{roof:-5},{roof:Infinity},{roof:1001},{usage:""},{usage:-100},{people:0},{people:1.5},{price:"abc"},{tariff:0.8},{orientation:"unknown"},{shading:"evil"},{houseType:"bad"},{zip:"<script>"},{zip:"123"}]){assert.ok(calc(bad).error,JSON.stringify(bad))}});
+test("invalid inputs rejected",()=>{for(const bad of [{roof:0},{roof:-5},{roof:Infinity},{roof:1001},{usage:""},{usage:-100},{people:0},{people:1.5},{price:"abc"},{tariff:0.8},{orientation:"unknown"},{shading:"evil"},{houseType:"bad"},{zip:"<script>"},{zip:"123"},{storage:"maybe"},{storage:""},{storage:1},{storage:null}]){assert.ok(calc(bad).error,JSON.stringify(bad))}});
+test("valid battery choices retain their intended meaning",()=>{
+  assert.equal(calc({storage:true}).storage,true);
+  assert.equal(calc({storage:"yes"}).storage,true);
+  assert.equal(calc({storage:false}).storage,false);
+  assert.equal(calc({storage:"no"}).storage,false);
+  assert.match(calc({storage:"maybe"}).error,/Stromspeicher/);
+});
 test("storage sizing depends on consumption and PV capacity",()=>{
   const a=storage(8,3000),b=storage(8,8000);
   assert.ok(a.options.length>=2&&b.options[1].capacity>a.options[1].capacity);
