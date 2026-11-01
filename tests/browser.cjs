@@ -107,6 +107,12 @@ async function main() {
   assert.equal(await page.locator("#roofSize").evaluate(e=>e.checkValidity()),false,"Browser validates roof area");
   await page.evaluate(() => calculatePv()); // Exercise the JS error path despite native form validation.
   assert.equal(await page.locator("#pvResult").getAttribute("role"),"alert","Invalid calculation announces an error");
+  // Number inputs can accept exponent notation; the model must reject it
+  // instead of silently interpreting 1e2 as a 100 m² roof.
+  await page.locator("#roofSize").fill("1e2");
+  await page.evaluate(() => calculatePv());
+  assert.match(await page.locator("#pvResult").innerText(),/Dachfläche zwischen/,"Exponent input is rejected");
+  assert.equal(await page.locator("#pvResult").getAttribute("role"),"alert","Rejected exponent is announced");
   await page.locator("#roofSize").fill("70");
   await page.locator('#pvCalculator button[type="submit"]').click();
   assert.equal(await page.locator("#pvResult").getAttribute("role"),"status","Corrected calculation returns to polite status");
