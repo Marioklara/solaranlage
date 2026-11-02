@@ -38,9 +38,9 @@ function calculatePvEstimate(input) {
   if (![undefined, true, false, "yes", "no"].includes(input.storage)) {
     return { error: "Bitte eine gültige Auswahl zum Stromspeicher treffen." };
   }
-  const houseType = input.houseType || "single";
-  const orientation = input.orientation || "south";
-  const shading = input.shading || "low";
+  const houseType = input.houseType === undefined ? "single" : input.houseType;
+  const orientation = input.orientation === undefined ? "south" : input.orientation;
+  const shading = input.shading === undefined ? "low" : input.shading;
   const zip = String(input.zip || "").trim();
 
   const validRange = (v, min, max) => Number.isFinite(v) && v >= min && v <= max;
