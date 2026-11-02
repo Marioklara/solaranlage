@@ -100,6 +100,8 @@ async function main() {
   assert.equal(await page.locator("#pvResult").getAttribute("tabindex"),"-1","Result can receive focus without adding an extra Tab stop");
   await page.locator(".scenario-compare summary").click();
   assert.equal(await page.locator(".scenario-compare tbody tr").count(),4,"Storage scenarios show four comparative rows");
+  assert.equal(await page.locator(".scenario-compare thead th[scope=\"col\"]").count(),3,"Scenario columns have explicit accessible header scope");
+  assert.equal(await page.locator(".scenario-compare tbody th[scope=\"row\"]").count(),4,"Scenario metrics have explicit row header scope");
   assert.ok(!result.includes("100 %"),"No 100 % autonomy from annual data");
   await page.locator("#roofSize").fill("5");
   assert.equal(await page.locator("#pvResult").innerText(),"Eingaben geändert. Bitte erneut berechnen.","Old PV estimate is hidden when inputs change");
