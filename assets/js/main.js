@@ -132,6 +132,7 @@ function renderResult(result, comparison) {
     <details class="scenario-compare">
       <summary>Mit und ohne Speicher vergleichen</summary>
       <div class="table-scroll"><table class="table scenario-table">
+        <caption>Unverbindlicher Vergleich der PV-Modellrechnung mit und ohne Stromspeicher</caption>
         <thead><tr><th scope="col">Rechenwert</th><th scope="col">Ohne Speicher</th><th scope="col">Mit Speicher</th></tr></thead>
         <tbody>
         <tr><th scope="row">Gesamtkosten</th><td>${money(comparison.no.investment)}</td><td>${money(comparison.yes.investment)}</td></tr>
