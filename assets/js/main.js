@@ -200,7 +200,7 @@ function updateStorageComparison() {
     }
     return;
   }
-  output.innerHTML = answer.options.map(option => `<tr><td>${option.title}</td><td>${option.capacity} kWh</td><td>${money(option.estimatedCost)}</td><td>${option.note}</td></tr>`).join("");
+  output.innerHTML = answer.options.map(option => `<tr><th scope="row">${option.title}</th><td>${option.capacity} kWh</td><td>${money(option.estimatedCost)}</td><td>${option.note}</td></tr>`).join("");
   if (feedback) {
     feedback.setAttribute("role", "status");
     feedback.textContent = `Speichervergleich aktualisiert für ${formatNumber(readNumber(document.getElementById("storagePvSize")?.value), 1)} kWp und ${formatNumber(readNumber(document.getElementById("storageUsage")?.value))} kWh Jahresverbrauch.`;
