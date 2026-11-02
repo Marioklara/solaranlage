@@ -132,12 +132,12 @@ function renderResult(result, comparison) {
     <details class="scenario-compare">
       <summary>Mit und ohne Speicher vergleichen</summary>
       <div class="table-scroll"><table class="table scenario-table">
-        <thead><tr><th>Rechenwert</th><th>Ohne Speicher</th><th>Mit Speicher</th></tr></thead>
+        <thead><tr><th scope="col">Rechenwert</th><th scope="col">Ohne Speicher</th><th scope="col">Mit Speicher</th></tr></thead>
         <tbody>
-        <tr><th>Gesamtkosten</th><td>${money(comparison.no.investment)}</td><td>${money(comparison.yes.investment)}</td></tr>
-        <tr><th>Eigenversorgung</th><td>${formatNumber(comparison.no.autonomyPercent)} %</td><td>${formatNumber(comparison.yes.autonomyPercent)} %</td></tr>
-        <tr><th>Vorteil/Jahr nach Betriebskosten</th><td>${money(comparison.no.yearlyNetBenefit)}</td><td>${money(comparison.yes.yearlyNetBenefit)}</td></tr>
-        <tr><th>Einfache Amortisation</th><td>${comparison.no.paybackYears ? formatNumber(comparison.no.paybackYears, 1) + " Jahre" : "–"}</td><td>${comparison.yes.paybackYears ? formatNumber(comparison.yes.paybackYears, 1) + " Jahre" : "–"}</td></tr>
+        <tr><th scope="row">Gesamtkosten</th><td>${money(comparison.no.investment)}</td><td>${money(comparison.yes.investment)}</td></tr>
+        <tr><th scope="row">Eigenversorgung</th><td>${formatNumber(comparison.no.autonomyPercent)} %</td><td>${formatNumber(comparison.yes.autonomyPercent)} %</td></tr>
+        <tr><th scope="row">Vorteil/Jahr nach Betriebskosten</th><td>${money(comparison.no.yearlyNetBenefit)}</td><td>${money(comparison.yes.yearlyNetBenefit)}</td></tr>
+        <tr><th scope="row">Einfache Amortisation</th><td>${comparison.no.paybackYears ? formatNumber(comparison.no.paybackYears, 1) + " Jahre" : "–"}</td><td>${comparison.yes.paybackYears ? formatNumber(comparison.yes.paybackYears, 1) + " Jahre" : "–"}</td></tr>
         </tbody>
       </table></div>
       <p class="result-disclaimer">Beide Szenarien beruhen auf vereinfachten Durchschnittswerten. Ein Speicher kann die Unabhängigkeit erhöhen, muss aber nicht wirtschaftlicher sein.</p>
