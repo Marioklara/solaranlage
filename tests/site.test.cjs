@@ -116,3 +116,20 @@ test("homepage does not publish unverified Organization structured data",()=>{
     }
   }
 });
+
+test("sitemap matches all public canonical pages without duplicates", () => {
+  const sitemap = fs.readFileSync(path.join(root, "sitemap.xml"), "utf8");
+  const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match => match[1]);
+  const canonicals = pages.map(file => {
+    const html = fs.readFileSync(path.join(root, file), "utf8");
+    const match = html.match(/rel="canonical" href="([^"]+)"/);
+    assert.ok(match, "Missing canonical: " + file);
+    return match[1];
+  });
+  assert.equal(new Set(urls).size, urls.length, "Sitemap must not contain duplicate URLs");
+  assert.deepEqual(urls.slice().sort(), canonicals.slice().sort(),
+    "Sitemap must contain exactly the canonical URLs of all public pages");
+  const robots = fs.readFileSync(path.join(root, "robots.txt"), "utf8");
+  assert.match(robots, /^Sitemap:\s*https:\/\/marioklara\.github\.io\/solaranlage\/sitemap\.xml\s*$/m,
+    "robots.txt must advertise the deployed sitemap");
+});
