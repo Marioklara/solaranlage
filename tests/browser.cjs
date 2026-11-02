@@ -121,6 +121,7 @@ async function main() {
 
   await page.goto(origin+"/stromspeicher/");
   assert.ok(await page.locator("#storageResult tr").count()>=2);
+  assert.equal(await page.locator("table:has(#storageResult) caption").innerText(), "Unverbindlicher Speichervergleich nach PV-Leistung und Jahresverbrauch", "Storage comparison table has an accessible descriptive caption");
   assert.equal(await page.locator("table:has(#storageResult) thead th[scope=\"col\"]").count(),4,"Storage table columns have explicit accessible header scope");
   assert.equal(await page.locator("#storageResult th[scope=\"row\"]").count(),await page.locator("#storageResult tr").count(),"Every storage option has an accessible row header");
   const initial=await page.locator("#storageResult").innerText();
