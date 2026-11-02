@@ -121,6 +121,8 @@ async function main() {
 
   await page.goto(origin+"/stromspeicher/");
   assert.ok(await page.locator("#storageResult tr").count()>=2);
+  assert.equal(await page.locator("table:has(#storageResult) thead th[scope=\"col\"]").count(),4,"Storage table columns have explicit accessible header scope");
+  assert.equal(await page.locator("#storageResult th[scope=\"row\"]").count(),await page.locator("#storageResult tr").count(),"Every storage option has an accessible row header");
   const initial=await page.locator("#storageResult").innerText();
   assert.equal(await page.locator("#storageFeedback").getAttribute("role"),"status","Valid storage result has a polite announcement");
   assert.match(await page.locator("#storageFeedback").innerText(),/4\.200 kWh/,"Initial storage usage is announced");
