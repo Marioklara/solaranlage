@@ -177,3 +177,12 @@ test("canonical and sitemap URLs stay on the published HTTPS origin without trac
     assert.equal(url.password, "", "Credentials must not appear in URLs");
   }
 });
+
+
+test("all public pages use unique HTML ids for reliable labels and anchors", () => {
+  for (const file of pages) {
+    const html = fs.readFileSync(path.join(root, file), "utf8");
+    const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
+    assert.equal(ids.length, new Set(ids).size, file + ": duplicate HTML id");
+  }
+});
