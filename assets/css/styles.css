@@ -539,7 +539,7 @@ a.card:hover, a.card:focus-visible { transform: translateY(-3px); box-shadow: 0 
 /* PV-Angebot24 2026: modern landing-page styling.
    Presentation-only; calculator logic, form semantics and privacy consent unchanged. */
 :root {
-  --green:#117e5e; --green-dark:#075840; --green-soft:#e5f6ed;
+  --green:#117e5e; --green-dark:#07563e; --green-soft:#e5f6ed;
   --ink:#172d26; --muted:#536b61; --paper:#fff; --line:#d5e5db;
   --sun:#f7bd51; --bg:#f4f8f5; --shadow:0 22px 56px rgba(17,55,42,.10);
 }
