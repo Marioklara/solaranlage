@@ -133,3 +133,25 @@ test("sitemap matches all public canonical pages without duplicates", () => {
   assert.match(robots, /^Sitemap:\s*https:\/\/marioklara\.github\.io\/solaranlage\/sitemap\.xml\s*$/m,
     "robots.txt must advertise the deployed sitemap");
 });
+
+test("PV and storage input boundaries remain finite and reject out-of-range values", () => {
+  for (const [key, low, high] of [
+    ["roof", 20, 1000], ["usage", 1000, 100000],
+    ["people", 1, 12], ["price", 0.1, 2], ["tariff", 0, 0.3]
+  ]) {
+    for (const value of [low, high]) {
+      const result = calc({ [key]: value });
+      assert.equal(result.error, undefined, key + " boundary " + value);
+      for (const field of ["pvKwp", "annualGeneration", "investment", "yearlyNetBenefit"]) {
+        assert.ok(Number.isFinite(result[field]), key + " boundary produces nonfinite " + field);
+      }
+    }
+    assert.ok(calc({ [key]: low - 0.01 }).error, key + " below minimum");
+    assert.ok(calc({ [key]: high + 0.01 }).error, key + " above maximum");
+  }
+  for (const [pv, usage] of [[3, 1000], [30, 100000]]) {
+    const result = storage(pv, usage);
+    assert.equal(result.error, undefined);
+    assert.ok(result.options.every(option => Number.isFinite(option.estimatedCost) && option.capacity > 0));
+  }
+});
