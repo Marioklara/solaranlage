@@ -534,3 +534,83 @@ a.card:hover, a.card:focus-visible { transform: translateY(-3px); box-shadow: 0 
 .local-cta { margin: 22px 0 0; }
 .local-cta .button { width: auto; }
 @media(max-width:600px){ .local-cta .button { width: 100%; } }
+
+
+/* PV-Angebot24 2026: modern landing-page styling.
+   Presentation-only; calculator logic, form semantics and privacy consent unchanged. */
+:root {
+  --green:#117e5e; --green-dark:#07563e; --green-soft:#e5f6ed;
+  --ink:#172d26; --muted:#536b61; --paper:#fff; --line:#d5e5db;
+  --sun:#f7bd51; --bg:#f4f8f5; --shadow:0 22px 56px rgba(17,55,42,.10);
+}
+body { font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif; }
+.site-header { background:rgba(255,255,255,.96); box-shadow:0 8px 35px rgba(10,44,31,.08); }
+.nav { max-width:1240px; padding-block:15px; }
+.logo { font-size:25px; letter-spacing:-.045em; }
+.logo span { color:#b9760e; }
+.nav-links a { font-size:14px; transition:color .15s ease; }
+.nav-links a:hover { color:var(--green); }
+.nav-cta,.button { border-radius:13px; min-height:50px; padding:13px 22px; letter-spacing:-.015em; }
+.nav-cta { background:var(--green-dark); box-shadow:0 8px 22px rgba(7,88,64,.15); }
+.hero {
+  background:
+    linear-gradient(105deg,rgba(7,38,31,.95) 0%,rgba(9,51,42,.85) 39%,rgba(12,60,45,.35) 80%),
+    url("../img/solar-hero.png") center/cover no-repeat;
+  min-height:610px; position:relative; overflow:hidden;
+}
+.hero::after {
+  content:""; position:absolute; pointer-events:none; top:0; right:0; bottom:0; width:60%;
+  background:radial-gradient(circle at 76% 13%,rgba(250,189,71,.23),transparent 42%);
+}
+.hero-inner { max-width:1240px; min-height:610px; padding:70px 26px 58px; position:relative; z-index:1; }
+.eyebrow { border:1px solid rgba(255,225,145,.7); color:#ffe2a7; background:rgba(24,62,45,.73); font-size:12px; letter-spacing:.045em; padding:9px 15px; }
+.hero h1 { max-width:765px; font-size:clamp(38px,5.2vw,68px); font-weight:830; letter-spacing:-.052em; line-height:1.07; text-wrap:balance; text-shadow:0 3px 20px rgba(0,0,0,.16); }
+.hero p { max-width:690px; color:#f0f7f2; font-size:clamp(17px,1.7vw,20px); line-height:1.65; }
+.hero-actions { margin-top:6px; }
+.hero-actions .button:first-child { background:var(--sun); color:#193326; box-shadow:0 13px 32px rgba(0,0,0,.19); }
+.hero-actions .button:first-child:hover { background:#ffce76; color:#14271e; }
+.hero-actions .button.outline { border:1px solid rgba(255,255,255,.74); background:rgba(3,35,28,.31); }
+.trust-row { margin-top:23px; }
+.trust-row span { font-size:12px; border-color:rgba(205,237,218,.32); background:rgba(4,32,25,.5); }
+.hero-highlights { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; max-width:830px; margin-top:25px; }
+.hero-highlight { display:grid; gap:3px; padding:15px 17px; border-radius:15px; border:1px solid rgba(235,255,246,.24); background:rgba(4,39,31,.60); backdrop-filter:blur(10px); }
+.hero-highlight strong { color:#ffe0a2; font-size:16px; line-height:1.3; }
+.hero-highlight span { color:#e5f5eb; font-size:13px; line-height:1.5; }
+.container { max-width:1210px; padding-top:70px; padding-bottom:70px; }
+.section-head h2 { letter-spacing:-.035em; text-wrap:balance; }
+.section-head p { font-size:16px; }
+.card { border:1px solid var(--line); border-radius:18px; padding:25px; box-shadow:var(--shadow); }
+a.card { display:block; transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease; }
+a.card:hover,a.card:focus-visible { border-color:#83bca0; }
+.band { background:linear-gradient(165deg,#edf8f2,#eaf4ef); }
+.step-number { width:47px; height:47px; background:#ddf2e5; color:#075840; border-radius:13px; }
+#rechner .card,#anfrage .card { border-radius:24px; padding:clamp(20px,3vw,36px); box-shadow:0 24px 58px rgba(21,70,48,.12); }
+#rechner .section-head { margin-bottom:35px; }
+input,select,textarea { border-radius:12px; padding:13px 14px; background:#fff; border-color:#bfcfc4; }
+input:hover,select:hover,textarea:hover { border-color:#6aa98a; }
+input:focus-visible,select:focus-visible,textarea:focus-visible { outline:3px solid var(--green-dark); outline-offset:2px; }
+.result-box { border-radius:18px; background:linear-gradient(130deg,#103c31,#072c25); }
+.metric { border:1px solid rgba(222,242,229,.26); background:rgba(255,255,255,.07); border-radius:13px; }
+.faq-stack .faq-item { border-radius:15px; }
+.faq-stack summary { min-height:57px; }
+.site-footer { background:#0c2b23; }
+@media(max-width:900px) {
+  .hero,.hero-inner { min-height:540px; }
+  .hero-highlights { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .hero-highlight { padding:12px 13px; }
+}
+@media(max-width:600px) {
+  .hero,.hero-inner { min-height:0; }
+  .hero-inner { padding:52px 18px 38px; }
+  .hero h1 { font-size:clamp(35px,9vw,47px); }
+  .hero-highlights { grid-template-columns:1fr; gap:9px; margin-top:20px; }
+  .hero-highlight { padding:12px 15px; }
+  .trust-row { gap:7px; }
+  .trust-row span { font-size:12px; }
+  .container { padding:50px 16px; }
+  #rechner .card,#anfrage .card { border-radius:17px; padding:18px; }
+  .nav { padding:11px 14px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .nav-links a,a.card { transition:none; }
+}
