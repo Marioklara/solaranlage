@@ -155,3 +155,25 @@ test("PV and storage input boundaries remain finite and reject out-of-range valu
     assert.ok(result.options.every(option => Number.isFinite(option.estimatedCost) && option.capacity > 0));
   }
 });
+
+
+test("canonical and sitemap URLs stay on the published HTTPS origin without tracking parameters", () => {
+  const expectedOrigin = "https://marioklara.github.io";
+  const sitemap = fs.readFileSync(path.join(root, "sitemap.xml"), "utf8");
+  const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match => match[1]);
+  for (const file of pages) {
+    const html = fs.readFileSync(path.join(root, file), "utf8");
+    const match = html.match(/rel="canonical" href="([^"]+)"/);
+    assert.ok(match, "Missing canonical: " + file);
+    urls.push(match[1]);
+  }
+  for (const value of urls) {
+    const url = new URL(value);
+    assert.equal(url.origin, expectedOrigin, "Unexpected canonical/sitemap origin: " + value);
+    assert.ok(url.pathname.startsWith("/solaranlage/"), "Outside published site: " + value);
+    assert.equal(url.search, "", "Tracking/query parameters must not be indexed: " + value);
+    assert.equal(url.hash, "", "Fragments must not be indexed: " + value);
+    assert.equal(url.username, "", "Credentials must not appear in URLs");
+    assert.equal(url.password, "", "Credentials must not appear in URLs");
+  }
+});
