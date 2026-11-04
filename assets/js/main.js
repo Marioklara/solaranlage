@@ -95,11 +95,15 @@ function calculateStorageOptions(pvSizeValue, annualUsageValue) {
     return { error: "Bitte einen Jahresverbrauch zwischen 1.000 und 100.000 kWh eingeben." };
   }
   const base = Math.min(12, Math.max(3, Math.round(Math.min(annualUsage / 1000 * 1.2, pvSize * 1.1))));
-  const capacities = Array.from(new Set([Math.max(2, base - 2), base, Math.min(15, base + 2)]));
-  return { options: capacities.map((capacity, index) => ({
-    title: ["Kompakt", "Orientierung", "Groß"][index],
-    capacity, estimatedCost: capacity * 850 + 600,
-    note: index === 0 ? "kleinere Investition" : index === 1 ? "verbrauchsorientierte Startgröße" : "Mehr Kapazität, Wirtschaftlichkeit prüfen"
+  const candidates = [
+    { title: "Kompakt", capacity: Math.max(2, base - 2), note: "kleinere Investition" },
+    { title: "Orientierung", capacity: base, note: "verbrauchsorientierte Startgröße" },
+    { title: "Groß", capacity: Math.min(15, base + 2), note: "Mehr Kapazität, Wirtschaftlichkeit prüfen" }
+  ];
+  const unique = candidates.filter((option, index) =>
+    candidates.findIndex(other => other.capacity === option.capacity) === index);
+  return { options: unique.map(option => ({
+    ...option, estimatedCost: option.capacity * 850 + 600
   })) };
 }
 
