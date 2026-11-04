@@ -186,3 +186,16 @@ test("all public pages use unique HTML ids for reliable labels and anchors", () 
     assert.equal(ids.length, new Set(ids).size, file + ": duplicate HTML id");
   }
 });
+
+
+test("storage option labels always describe their own capacities", () => {
+  for (const pv of [3, 8, 30]) for (const usage of [1000, 4200, 100000]) {
+    const result = storage(pv, usage);
+    assert.equal(result.error, undefined);
+    const capacities = result.options.map(option => option.capacity);
+    assert.equal(new Set(capacities).size, capacities.length);
+    assert.deepEqual(result.options.map(option => option.title), ["Kompakt", "Orientierung", "Groß"]);
+    assert.ok(capacities[0] < capacities[1] && capacities[1] < capacities[2]);
+    for (const option of result.options) assert.equal(option.estimatedCost, option.capacity * 850 + 600);
+  }
+});
