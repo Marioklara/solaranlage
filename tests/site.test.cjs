@@ -191,8 +191,8 @@ test("all public pages use unique HTML ids for reliable labels and anchors", () 
 test("explicit label targets resolve to an input on every public page", () => {
   for (const file of pages) {
     const html = fs.readFileSync(path.join(root, file), "utf8");
-    const ids = new Set([...html.matchAll(/\\bid="([^"]+)"/g)].map(match => match[1]));
-    for (const [, target] of html.matchAll(/<label\\b[^>]*\\bfor="([^"]+)"/gi)) {
+    const ids = new Set([...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]));
+    for (const [, target] of html.matchAll(/<label\b[^>]*\bfor="([^"]+)"/gi)) {
       assert.ok(ids.has(target), file + ": label points to missing id " + target);
     }
   }
