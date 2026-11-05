@@ -108,6 +108,10 @@ async function main() {
   assert.equal(await page.locator("#pvResult").innerText(),"Eingaben geändert. Bitte erneut berechnen.","Old PV estimate is hidden when inputs change");
   assert.equal(await page.locator("#pvResult").getAttribute("role"),"status","Recalculation notice is accessible");
   assert.equal(await page.locator("#roofSize").evaluate(e=>e.checkValidity()),false,"Browser validates roof area");
+  await page.locator('#pvCalculator button[type="submit"]').click();
+  assert.equal(await page.locator("#pvResult").getAttribute("role"),"alert","Native validation also exposes a persistent error");
+  assert.match(await page.locator("#pvResult").innerText(),/20/,"Roof error explains the minimum after an actual submit click");
+  assert.equal(await page.locator("#roofSize").evaluate(e=>document.activeElement===e),true,"Native validation focuses the invalid input");
   await page.evaluate(() => calculatePv()); // Exercise the JS error path despite native form validation.
   assert.equal(await page.locator("#pvResult").getAttribute("role"),"alert","Invalid calculation announces an error");
   // Number inputs can accept exponent notation; the model must reject it
@@ -147,6 +151,18 @@ async function main() {
   assert.equal(await page.locator("#calculatorTransferNotice").isHidden(),true,"No transfer notice before the visitor calculates");
   assert.equal(await page.locator("#formZip").inputValue(),"","Contact ZIP starts empty");
   assert.equal(await page.locator("#project").inputValue(),"","No project type is silently preselected");
+  await page.locator(".result-cta").click();
+  assert.equal(await page.locator("#formZip").inputValue(),await page.locator("#zip").inputValue(),"Explicit preview adoption transfers the ZIP");
+  assert.equal(await page.locator("#project").inputValue(),"Solaranlage mit Speicher","Explicit preview adoption transfers the project");
+  assert.match(await page.locator("#pvLeadSummary").inputValue(),/PV etwa/,"Explicit preview adoption attaches calculation");
+  assert.equal(await page.locator("#calculatorTransferNotice").isVisible(),true,"Adoption is disclosed");
+  assert.equal(await page.locator("#name").evaluate(e=>document.activeElement===e),true,"Adoption focuses the first contact field");
+  await page.locator("#formZip").fill("68159");
+  await page.locator("#project").selectOption("Wärmepumpe mit PV planen");
+  await page.locator(".result-cta").click();
+  assert.equal(await page.locator("#formZip").inputValue(),"68159","Adoption preserves manually chosen ZIP");
+  assert.equal(await page.locator("#project").inputValue(),"Wärmepumpe mit PV planen","Adoption preserves manually chosen project");
+  await page.goto(origin+"/");
   await page.locator("#zip").fill("68723");
   await page.locator('#pvCalculator button[type="submit"]').click();
   assert.equal(await page.locator("#formZip").inputValue(),"68723","ZIP transfers to lead form");

@@ -143,7 +143,7 @@ function renderResult(result, comparison) {
       </table></div>
       <p class="result-disclaimer">Beide Szenarien beruhen auf vereinfachten Durchschnittswerten. Ein Speicher kann die Unabhängigkeit erhöhen, muss aber nicht wirtschaftlicher sein.</p>
     </details>
-    <a class="button result-cta" href="${document.getElementById("solarLeadForm") ? "#anfrage" : "../index.html#anfrage"}">Unverbindliche Anfrage stellen <span aria-hidden="true">→</span></a>`;
+    <a class="button result-cta" href="${document.getElementById("solarLeadForm") ? "#anfrage" : "../index.html#anfrage"}">${document.getElementById("solarLeadForm") ? "Berechnung übernehmen und Anfrage stellen" : "Unverbindliche Anfrage stellen"} <span aria-hidden="true">→</span></a>`;
 }
 
 function calculatePv({ transferToLead = true } = {}) {
@@ -261,6 +261,30 @@ function initializeSite() {
   });
   const calcForm = document.getElementById("pvCalculator");
   if (calcForm) {
+    // Native validation stops submit before our submit listener runs. Keep its
+    // field focus while also exposing a persistent, accessible error message.
+    calcForm.addEventListener("invalid", event => {
+      const firstInvalid = calcForm.querySelector(":invalid");
+      if (event.target !== firstInvalid) return;
+      const label = event.target.labels?.[0]?.textContent || "Eingabe";
+      renderResult({ error: `${label}: ${event.target.validationMessage}` });
+      const summary = document.getElementById("pvLeadSummary");
+      const note = document.getElementById("calculatorTransferNotice");
+      if (summary) summary.value = "";
+      if (note) note.hidden = true;
+    }, true);
+    // The initial preview is not attached automatically. This explicitly named
+    // action lets visitors intentionally adopt it without first recalculating.
+    document.getElementById("pvResult")?.addEventListener("click", event => {
+      const link = event.target.closest(".result-cta");
+      if (!link || !document.getElementById("solarLeadForm")) return;
+      event.preventDefault();
+      if (!calcForm.reportValidity()) return;
+      const result = calculatePv();
+      if (result.error) return;
+      document.getElementById("anfrage")?.scrollIntoView();
+      document.getElementById("name")?.focus({ preventScroll: true });
+    });
     calcForm.addEventListener("submit", event => {
       event.preventDefault();
       calculatePv();
