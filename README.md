@@ -10,7 +10,8 @@ Die Website ist **kein aktives Vergleichsportal mit angeschlossenen Solarfirmen*
 - Separate Modellwerte für Haushalts-Eigenverbrauch, Stromkosteneinsparung, Einspeiseerlöse, Betriebskosten und einfache Amortisation
 - Direkter PV-Szenarienvergleich **mit und ohne Stromspeicher** inklusive Modellkosten und Eigenversorgung
 - Speicher-Vergleich auf Basis von PV-Größe **und** Jahresstromverbrauch
-- Übergabe der PV-Eckdaten in das Kontaktformular (nur auf der Startseite)
+- Übergabe der PV-Eckdaten in das Kontaktformular nach Berechnung oder ausdrücklicher Übernahme der Vorschau (nur auf der Startseite); manuell bearbeitete Kontaktangaben bleiben erhalten
+- Dauerhaft sichtbare Fehlermeldungen bei ungültigen Rechnereingaben, zusätzlich zur Browservalidierung
 - Kontaktformular über den externen Anbieter FormSubmit, mit CAPTCHA und Honeypot-Feld (echte Zustellung noch nicht geprüft)
 - Freiwillige, nicht vorausgewählte Kontaktoption für eine mögliche spätere Partnervermittlung; **keine** automatische Weitergabe
 - Qualifizierung über Eigentümerstatus, Projektzeitraum und Dachart
