@@ -146,8 +146,8 @@
           </div>
           <br>
           <label for="message">Nachricht</label>
-          <textarea id="message" name="nachricht" maxlength="1500" placeholder="Optional: Dachzustand, geplante Wärmepumpe, E-Auto oder weitere Wünsche"></textarea>
-          <p class="field-note">Pflichtfelder sind mit „erforderlich“ gekennzeichnet. Wir empfehlen, sensible Daten nicht im Freitext mitzuteilen.</p>
+          <textarea id="message" name="nachricht" aria-describedby="messagePrivacyHint" maxlength="1500" placeholder="Optional: Dachzustand, geplante Wärmepumpe, E-Auto oder weitere Wünsche"></textarea>
+          <p class="field-note" id="messagePrivacyHint">Pflichtfelder sind mit „erforderlich“ gekennzeichnet. Wir empfehlen, sensible Daten nicht im Freitext mitzuteilen.</p>
           <label class="checkbox"><input type="checkbox" name="partner_einwilligung" value="Kontakt erwünscht"> <span><strong>Freiwillig:</strong> Ich möchte informiert werden, wenn PV-Angebot24 einen geeigneten Installationsbetrieb für mein Projekt findet. Meine Daten werden dadurch noch nicht an Betriebe weitergegeben. Vor einer möglichen Weitergabe werden Empfänger und Zweck separat mit mir abgestimmt.</span></label>
           <label class="checkbox"><input type="checkbox" required name="datenschutz_zustimmung" value="Ja"> <span>Ich habe die <a href="#datenschutz">Datenschutzhinweise</a> zur Verarbeitung meiner Anfrage und zur Nutzung von FormSubmit gelesen. (erforderlich)</span></label>
           <input type="hidden" name="_subject" value="Neue Solar-Anfrage über PV-Angebot24">
