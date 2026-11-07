@@ -214,3 +214,10 @@ test("storage comparison updates are announced accessibly", () => {
   assert.match(html, /<tbody\b[^>]*\bid="storageResult"[^>]*\baria-live="polite"[^>]*>/,
     "Updated storage comparison rows should be announced without interrupting screen readers");
 });
+
+
+test("contact message announces privacy guidance to assistive technology", () => {
+  const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
+  assert.match(html, /<textarea\\b[^>]*\\bid="message"[^>]*\\baria-describedby="messagePrivacyHint"/);
+  assert.match(html, /<p\\b[^>]*\\bid="messagePrivacyHint"[^>]*>[^<]*sensible Daten/);
+});
