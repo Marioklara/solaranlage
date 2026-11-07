@@ -207,3 +207,10 @@ test("calculator and contact postcode fields support browser postal-code autofil
     assert.match(input[0], /\bautocomplete="postal-code"/, `${id} must offer postal-code autofill`);
   }
 });
+
+
+test("storage comparison updates are announced accessibly", () => {
+  const html = fs.readFileSync(path.join(root, "stromspeicher/index.html"), "utf8");
+  assert.match(html, /<tbody\b[^>]*\bid="storageResult"[^>]*\baria-live="polite"[^>]*>/,
+    "Updated storage comparison rows should be announced without interrupting screen readers");
+});
