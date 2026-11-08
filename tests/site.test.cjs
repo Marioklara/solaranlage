@@ -202,7 +202,7 @@ test("explicit label targets resolve to an input on every public page", () => {
 test("calculator and contact postcode fields support browser postal-code autofill", () => {
   const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
   for (const id of ["zip", "formZip"]) {
-    const input = html.match(new RegExp(`<input\\b[^>]*\\bid="${id}"[^>]*>`));
+    const input = html.match(new RegExp(String.raw`<input\b[^>]*\bid="${id}"[^>]*>`));
     assert.ok(input, `Missing postcode input: ${id}`);
     assert.match(input[0], /\bautocomplete="postal-code"/, `${id} must offer postal-code autofill`);
   }
@@ -213,4 +213,11 @@ test("storage comparison updates are announced accessibly", () => {
   const html = fs.readFileSync(path.join(root, "stromspeicher/index.html"), "utf8");
   assert.match(html, /<tbody\b[^>]*\bid="storageResult"[^>]*\baria-live="polite"[^>]*>/,
     "Updated storage comparison rows should be announced without interrupting screen readers");
+});
+
+
+test("contact message announces privacy guidance to assistive technology", () => {
+  const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
+  assert.match(html, /<textarea\b[^>]*\bid="message"[^>]*\baria-describedby="messagePrivacyHint"/);
+  assert.match(html, /<p\b[^>]*\bid="messagePrivacyHint"[^>]*>[^<]*sensible Daten/);
 });
