@@ -168,8 +168,8 @@ function calculatePv({ transferToLead = true } = {}) {
     const summary = document.getElementById("pvLeadSummary");
     const note = document.getElementById("calculatorTransferNotice");
     if (summary) summary.value = "";
-      const details = document.getElementById("calculatorTransferDetails");
-      if (details) details.textContent = "";
+    const details = document.getElementById("calculatorTransferDetails");
+    if (details) details.textContent = "";
     if (note) note.hidden = true;
   }
   // The initial preview uses example values. Attach them to a contact request only
