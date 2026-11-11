@@ -168,6 +168,8 @@ function calculatePv({ transferToLead = true } = {}) {
     const summary = document.getElementById("pvLeadSummary");
     const note = document.getElementById("calculatorTransferNotice");
     if (summary) summary.value = "";
+    const details = document.getElementById("calculatorTransferDetails");
+    if (details) details.textContent = "";
     if (note) note.hidden = true;
   }
   // The initial preview uses example values. Attach them to a contact request only
@@ -176,7 +178,10 @@ function calculatePv({ transferToLead = true } = {}) {
     const summary = document.getElementById("pvLeadSummary");
     const formZip = document.getElementById("formZip");
     const project = document.getElementById("project");
-    if (summary) summary.value = `Dach ${result.input.roof} m²; Bedarf ${result.input.usage} kWh/Jahr; PV etwa ${formatNumber(result.pvKwp,1)} kWp; Speicher ${result.batteryKwh} kWh; Investition ca. ${money(result.investment)}; Jahresvorteil ca. ${money(result.yearlyNetBenefit)} (unverbindliche Modellrechnung)`;
+    const leadSummary = `Dach ${result.input.roof} m²; Bedarf ${result.input.usage} kWh/Jahr; PV etwa ${formatNumber(result.pvKwp,1)} kWp; Speicher ${result.batteryKwh} kWh; Investition ca. ${money(result.investment)}; Jahresvorteil ca. ${money(result.yearlyNetBenefit)} (unverbindliche Modellrechnung)`;
+    if (summary) summary.value = leadSummary;
+    const details = document.getElementById("calculatorTransferDetails");
+    if (details) details.textContent = leadSummary;
     // Update only values that the calculator filled itself; never overwrite a manually edited PLZ.
     if (formZip && (!formZip.value || (formZip.dataset.pvAutoZip !== undefined && formZip.value === formZip.dataset.pvAutoZip))) {
       formZip.value = result.input.zip;
@@ -275,6 +280,8 @@ function initializeSite() {
       const summary = document.getElementById("pvLeadSummary");
       const note = document.getElementById("calculatorTransferNotice");
       if (summary) summary.value = "";
+      const details = document.getElementById("calculatorTransferDetails");
+      if (details) details.textContent = "";
       if (note) note.hidden = true;
     }, true);
     // The initial preview is not attached automatically. This explicitly named
@@ -306,6 +313,8 @@ function initializeSite() {
       const note = document.getElementById("calculatorTransferNotice");
       const result = document.getElementById("pvResult");
       if (summary) summary.value = "";
+      const details = document.getElementById("calculatorTransferDetails");
+      if (details) details.textContent = "";
       if (note) note.hidden = true;
       // A project inferred from the previous calculation is no longer reliable.
       // Preserve an explicitly selected project type.

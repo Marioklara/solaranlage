@@ -147,6 +147,7 @@ async function main() {
   // Initial example preview must not silently become part of a real inquiry.
   assert.match(await page.locator("#pvResult").innerText(),/Orientierende PV-Größe/,"Initial example preview remains available");
   assert.equal(await page.locator("#pvLeadSummary").inputValue(),"","No example calculation is attached before an explicit submit");
+  assert.equal(await page.locator("#calculatorTransferDetails").innerText(),"","No inherited preview details before consent to transfer");
   assert.equal(await page.locator("#pvResult").evaluate(e => document.activeElement === e),false,"Initial example preview must not steal keyboard focus");
   assert.equal(await page.locator("#calculatorTransferNotice").isHidden(),true,"No transfer notice before the visitor calculates");
   assert.equal(await page.locator("#formZip").inputValue(),"","Contact ZIP starts empty");
@@ -155,6 +156,8 @@ async function main() {
   assert.equal(await page.locator("#formZip").inputValue(),await page.locator("#zip").inputValue(),"Explicit preview adoption transfers the ZIP");
   assert.equal(await page.locator("#project").inputValue(),"Solaranlage mit Speicher","Explicit preview adoption transfers the project");
   assert.match(await page.locator("#pvLeadSummary").inputValue(),/PV etwa/,"Explicit preview adoption attaches calculation");
+  assert.equal(await page.locator("#calculatorTransferDetails").innerText(),
+    await page.locator("#pvLeadSummary").inputValue(),"Visitors see exactly the calculation transmitted with their inquiry");
   assert.equal(await page.locator("#calculatorTransferNotice").isVisible(),true,"Adoption is disclosed");
   assert.equal(await page.locator("#name").evaluate(e=>document.activeElement===e),true,"Adoption focuses the first contact field");
   await page.locator("#formZip").fill("68159");
@@ -193,6 +196,8 @@ async function main() {
   await page.locator("#roofSize").fill("75");
   assert.equal(await page.locator("#formZip").inputValue(),"","Editing non-ZIP calculator inputs also clears stale auto-filled contact ZIP");
   assert.equal(await page.locator("#pvLeadSummary").inputValue(),"","Stale calculator values must be cleared when input changes");
+  assert.equal(await page.locator("#calculatorTransferDetails").innerText(),"","Stale visible calculation is cleared");
+  assert.equal(await page.locator("#calculatorTransferNotice").isHidden(),true,"Stale calculation notice is hidden");
   assert.equal(await page.locator("#pvResult").innerText(),"Eingaben geändert. Bitte erneut berechnen.","Lead form must not show an outdated PV result");
   assert.equal(await page.locator(".scenario-compare").count(),0,"Outdated scenario comparison is removed until recalculation");
   await page.locator('#pvCalculator button[type="submit"]').click();
