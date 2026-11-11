@@ -62,7 +62,7 @@
       <div class="card">
         <form id="pvCalculator">
           <div class="form-grid">
-            <div><label for="zip">PLZ</label><input id="zip" name="plz" inputmode="numeric" maxlength="5" pattern="[0-9]{5}" placeholder="z. B. 68723"></div>
+            <div><label for="zip">PLZ</label><input id="zip" name="plz" autocomplete="postal-code" inputmode="numeric" maxlength="5" pattern="[0-9]{5}" placeholder="z. B. 68723"></div>
             <div><label for="houseType">Hausart</label><select id="houseType"><option value="single">Einfamilienhaus</option><option value="multi">Mehrfamilienhaus</option><option value="row">Reihenhaus</option></select></div>
             <div><label for="roofOrientation">Dachausrichtung</label><select id="roofOrientation"><option value="south">Süd / überwiegend Süd</option><option value="eastwest">Ost / West</option><option value="north">Überwiegend Nord</option></select></div>
             <div><label for="shadeLevel">Verschattung</label><select id="shadeLevel"><option value="low">Gering</option><option value="medium">Mittel</option><option value="high">Stark</option></select></div>
@@ -138,7 +138,7 @@
             <div><label for="name">Name (erforderlich)</label><input id="name" name="name" required autocomplete="name"></div>
             <div><label for="email">E-Mail (erforderlich)</label><input id="email" name="email" type="email" required autocomplete="email"></div>
             <div><label for="phone">Telefon optional</label><input id="phone" name="telefon" type="tel" autocomplete="tel" inputmode="tel"></div>
-            <div><label for="formZip">PLZ (erforderlich)</label><input id="formZip" name="plz" required inputmode="numeric" maxlength="5" pattern="[0-9]{5}"></div>
+            <div><label for="formZip">PLZ (erforderlich)</label><input id="formZip" name="plz" required autocomplete="postal-code" inputmode="numeric" maxlength="5" pattern="[0-9]{5}"></div>
             <div><label for="project">Projektart</label><select id="project" name="projektart" required><option value="" selected disabled>Bitte Projektart auswählen</option><option>Solaranlage mit Speicher</option><option>Solaranlage ohne Speicher</option><option>Stromspeicher nachrüsten</option><option>Wärmepumpe mit PV planen</option></select></div>
             <div><label for="timeline">Wann möchtest du starten?</label><select id="timeline" name="zeitraum" required><option value="" selected disabled>Bitte auswählen</option><option>innerhalb von 3 Monaten</option><option>in 3 bis 6 Monaten</option><option>später / erst informieren</option></select></div>
             <div><label for="ownership">Wohnsituation</label><select id="ownership" name="eigentuemer_status" required><option value="" selected disabled>Bitte auswählen</option><option>Ich bin Eigentümer/in</option><option>Ich entscheide mit</option><option>Ich bin Mieter/in</option><option>Ich plane einen Hauskauf</option></select></div>
@@ -146,8 +146,8 @@
           </div>
           <br>
           <label for="message">Nachricht</label>
-          <textarea id="message" name="nachricht" maxlength="1500" placeholder="Optional: Dachzustand, geplante Wärmepumpe, E-Auto oder weitere Wünsche"></textarea>
-          <p class="field-note">Pflichtfelder sind mit „erforderlich“ gekennzeichnet. Wir empfehlen, sensible Daten nicht im Freitext mitzuteilen.</p>
+          <textarea id="message" name="nachricht" aria-describedby="messagePrivacyHint" maxlength="1500" placeholder="Optional: Dachzustand, geplante Wärmepumpe, E-Auto oder weitere Wünsche"></textarea>
+          <p class="field-note" id="messagePrivacyHint">Pflichtfelder sind mit „erforderlich“ gekennzeichnet. Wir empfehlen, sensible Daten nicht im Freitext mitzuteilen.</p>
           <label class="checkbox"><input type="checkbox" name="partner_einwilligung" value="Kontakt erwünscht"> <span><strong>Freiwillig:</strong> Ich möchte informiert werden, wenn PV-Angebot24 einen geeigneten Installationsbetrieb für mein Projekt findet. Meine Daten werden dadurch noch nicht an Betriebe weitergegeben. Vor einer möglichen Weitergabe werden Empfänger und Zweck separat mit mir abgestimmt.</span></label>
           <label class="checkbox"><input type="checkbox" required name="datenschutz_zustimmung" value="Ja"> <span>Ich habe die <a href="#datenschutz">Datenschutzhinweise</a> zur Verarbeitung meiner Anfrage und zur Nutzung von FormSubmit gelesen. (erforderlich)</span></label>
           <input type="hidden" name="_subject" value="Neue Solar-Anfrage über PV-Angebot24">
