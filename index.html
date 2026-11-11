@@ -133,7 +133,11 @@
         <form action="https://formsubmit.co/alsalehmohammad126@gmail.com" method="POST" id="solarLeadForm">
           <input type="hidden" id="pvLeadSummary" name="pv_berechnung" value="">
           <input type="text" name="_honey" tabindex="-1" autocomplete="off" class="honeypot" aria-hidden="true">
-          <p id="calculatorTransferNotice" class="field-note" hidden>Deine Angaben aus dem PV-Rechner werden der Anfrage beigefügt. Prüfe sie vor dem Absenden.</p>
+          <div id="calculatorTransferNotice" class="field-note calculator-transfer" hidden>
+            <strong>Deine übernommenen PV-Angaben</strong>
+            <p id="calculatorTransferDetails"></p>
+            <p>Diese Angaben werden mit deiner Anfrage gesendet. Prüfe sie vor dem Absenden. Name und E-Mail trägst du selbst ein.</p>
+          </div>
           <div class="form-grid">
             <div><label for="name">Name (erforderlich)</label><input id="name" name="name" required autocomplete="name"></div>
             <div><label for="email">E-Mail (erforderlich)</label><input id="email" name="email" type="email" required autocomplete="email"></div>

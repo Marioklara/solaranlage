@@ -614,3 +614,14 @@ input:focus-visible,select:focus-visible,textarea:focus-visible { outline:3px so
 @media(prefers-reduced-motion:reduce) {
   .nav-links a,a.card { transition:none; }
 }
+
+/* The exact lead calculation is visible for checking before external submission. */
+.calculator-transfer {
+  padding: 12px 16px;
+  border-left: 4px solid var(--green);
+  border-radius: 8px;
+  background: var(--green-soft);
+  color: var(--ink);
+}
+.calculator-transfer p { margin: 6px 0 0; overflow-wrap: anywhere; }
+.calculator-transfer[hidden] { display: none; }
