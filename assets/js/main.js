@@ -28,6 +28,9 @@ function formatNumber(value, digits = 0) {
 }
 
 function calculatePvEstimate(input) {
+  if (!input || typeof input !== "object" || Array.isArray(input)) {
+    return { error: "Bitte gültige Rechnerangaben eingeben." };
+  }
   const roof = readNumber(input.roof);
   const usage = readNumber(input.usage);
   const people = readNumber(input.people);

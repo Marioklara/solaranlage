@@ -15,6 +15,12 @@ test("explicitly empty roof selections are rejected rather than replaced with de
   assert.ok(!calc({houseType: undefined, orientation: undefined, shading: undefined}).error,
     "Omitted optional values retain backwards-compatible defaults");
 });
+test("malformed calculator payload returns an error instead of throwing", () => {
+  for (const payload of [null, undefined, "", 0, [], true]) {
+    assert.doesNotThrow(() => estimate(payload));
+    assert.match(estimate(payload).error, /Rechnerangaben/);
+  }
+});
 test("German decimal input",()=>{assert.equal(readNumber("0,25"),0.25);assert.ok(Number.isNaN(readNumber("")))});
 test("reject ambiguous numeric notation instead of silently changing estimates",()=>{
   for(const bad of ["0x46","0b1000110","1e3","70px","1,2,3"," ",[],null,Infinity]) {
