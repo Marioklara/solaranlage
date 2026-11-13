@@ -18,7 +18,10 @@ test("every published page declares German and a mobile viewport", () => {
   for (const page of pages) {
     const html = fs.readFileSync(path.join(root, page), "utf8");
     assert.match(html, /<html\s+lang="de"\s*>/i, page + ": missing German document language");
-    assert.match(html, /<meta\s+name="viewport"\s+content="width=device-width, initial-scale=1\.0"\s*\/>/i,
+    // HTML5 void elements do not require a trailing slash.
+    const viewport = html.match(/<meta\b[^>]*\bname="viewport"[^>]*>/i)?.[0];
+    assert.ok(viewport, page + ": missing viewport meta tag");
+    assert.match(viewport, /\bcontent="width=device-width,\s*initial-scale=1(?:\.0)?"/i,
       page + ": missing responsive viewport");
   }
 });
